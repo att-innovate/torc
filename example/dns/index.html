@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="http://att-innovate.github.io/torc/example/dns/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>DNS Infrastructure - ToRC</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">ToRC</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">Home</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Installation <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../installation/installation/">Overview</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../installation/wedge/">Provision Wedge</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../installation/snaproute/">Configure SnapRoute</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../installation/torc-core/">Install ToRC Core</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../installation/compute/">Provision Compute Node</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../installation/scheduler/">Restart Scheduler</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../installation/explore/">Explore ToRC Services</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Example <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li class="active">
+    <a href="./">DNS Infrastructure</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../reference/">Reference</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../construction/">Construction Sites</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../softwarehardware/">Software / Hardware</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../about/team/">Team</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../about/license/">License</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../../installation/explore/">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../reference/">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="http://github.com/att-innovate/torc">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#dns-example">DNS Example</a></li>
+        
+            <li><a href="#components-services">Components / Services</a></li>
+        
+            <li><a href="#installation">Installation</a></li>
+        
+            <li><a href="#demo">Demo</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="dns-example">DNS Example</h1>
+<p>We use an external face-ing DNS cluster scenario as our demo use-case for ToRC. This demo will provide some insides in to sub-schedulers, optimization components, and sub-networking.</p>
+<p><img alt="demo-dns-setup" src="../../assets/demo-dns-setup.png" /></p>
+<h2 id="components-services">Components / Services</h2>
+<p>All the components in blue in the diagram above are part of this use-case. They all get deployed as Docker containers using Mesos which interacts with our schedulers.</p>
+<ul>
+<li>DNS Scheduler: Orchestrates placement of demo services.</li>
+<li>DNS Service: Simple bind9 daemon.</li>
+<li>Load-generator: Generates DNS specific load and spreads it equally across the running demo DNS servers. </li>
+<li>Smartscaling: Observes network load on each demo DNS server. The necessary date gets read from InfluxDB, and based on that data decisions get made about when to add or remove additional DNS servers. It interacts with the DNS Scheduler to execute on those insights.</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>It is assumed that all the ToRC Core services are deployed and up and running. Please refer to the corresponding <a href="../../installation/torc-core/">ToRC Core</a> section in the   installation guide.</p>
+<h3 id="build-containers">Build Containers</h3>
+<p>All the scripts we are using are built according to our <a href="../../installation/installation/">demo setup</a>. If you setup differs you will have to change the scripts accordingly.</p>
+<p>Checkout <code>torc-scripts</code> repository on your local host:</p>
+<pre><code>localhost:$ git clone https://github.com/att-innovate/torc-scripts.git
+</code></pre>
+<p>For simplification instead of using a Docker registry we use a script that ssh in to the different hosts and runs <code>docker build</code> for all the required containers.</p>
+<p>The list of hosts can be found in <code>./torc-scripts/deploy/example-dns/slaves.txt</code>.</p>
+<pre><code>localhost:~$ cd torc-scripts/deploy/example-dns/
+localhost:~/torc-scripts/example-dns/$ ./docker_build_slaves.sh
+</code></pre>
+<p>The script will ask for the password for the default user (bladerunner) and for sudo, which is required for building of the containers.</p>
+<h3 id="deploy-dns-scheduler">Deploy DNS-Scheduler</h3>
+<p>The DNS-Scheduler works with a default configuration aligned to our <a href="../../installation/installation/">demo setup</a> and the diagram about the DNS use-case <a href="./#dns-example">above</a>. We will be installing the DNS-Scheduler on <code>bladerunner3</code> according to the <a href="./#dns-example">diagram above</a> and use <code>bladerunner1</code> and <code>bladerunner2</code> for our DNS servers.</p>
+<p>Details about the DNS-Scheduler configuration can be found in <code>torc-scripts/docker/example-dns/torc-dns-scheduler/provision/config.yml</code> on <code>bladerunner3</code>.</p>
+<pre><code>localhost:$ ssh bladerunner@bladerunner3
+bladerunner@bladerunner3:~$ sudo ./torc-scripts/deploy/example-dns/onnode/docker_build_dns_scheduler_slave.sh
+</code></pre>
+<p>Verify that all the necessary images got built by listing the docker images.</p>
+<pre><code>bladerunner@bladerunner3:~$ sudo docker images
+</code></pre>
+<h3 id="run-dns-scheduler">Run DNS-Scheduler</h3>
+<p>The DNS-Scheduler can get started by using the ToRC-Scheduler API. Following script will use that API to get it started. You can run it from your localhost.</p>
+<pre><code>localhost:$ ./torc-scripts/demo/run_dns_scheduler.sh
+</code></pre>
+<p>If you check the <a href="http://wedge:5050/#/frameworks">Mesos Frameworks</a> page you should see the DNS-Scheduler showing up.</p>
+<p><img alt="mesos-dns-frameworks" src="../../assets/mesos-dns-frameworks.png" /></p>
+<p>The DNS-Scheduler itself will start up a first dns server on bladerunner1, which can be seen on the <a href="http://wedge:5050/#/">Mesos Tasks</a> page.</p>
+<p><img alt="mesos-dns-tasks" src="../../assets/mesos-dns-tasks.png" /></p>
+<p>This first dns server <code>dns-sl1.service.torc</code> like any use-case specific container will get an internal IP in form of <code>192.168.2.xxx</code> which can be checked via <a href="http://wedge:8500/ui/#/dc1/nodes/wedge">Consul UI</a>.</p>
+<p>By default we also configure /32 routes for those containers. This can be checked via <a href="http://wedge:8080/public/v1/state/IPv4Routes">SnapRoute Config</a>.</p>
+<h2 id="demo">Demo</h2>
+<p>The demo setup uses a simple “Optimizer” to scale our DNS cluster based on the collected metrics.</p>
+<p>The demo will also provide some insides in to the inner-workings of ToRC and its core services.</p>
+<p>All the scripts needed are in the <code>torc-scripts/demo</code> folder, and as always, the scripts are specifically written for our demo setup, see <a href="./#dns-example">diagram above</a>, but can be changed according to your setup.</p>
+<h3 id="restart-dns-scheduler">Restart DNS-Scheduler</h3>
+<p>Lets start with a fresh state. Change in to your local <code>torc-scripts/demo</code> folder, and restart the scheduler.</p>
+<pre><code>localhost:$ ./kill_dns_scheduler.sh
+localhost:$ ./run_dns_scheduler.sh
+</code></pre>
+<p>Use <a href="http://wedge:5050/#/">Mesos-Tasks</a> to verify that the scheduler and dns-sl1 server are up and running.</p>
+<h3 id="add-dns-load">Add DNS Load</h3>
+<p>Next we start two load-generators to put some DNS load on to our DNS server. Those scripts will interact with the DNS Scheduler to have the corresponding services started.</p>
+<pre><code>localhost:$ ./run_normalload200.sh
+localhost:$ ./run_normalload400.sh
+</code></pre>
+<p><a href="http://wedge:9091/#/?host=bladerunner1&amp;hostspec=localhost&amp;container=dns-sl1&amp;widgets=network.interface.bytes">Vector</a> can be used to observe the network load on the dns server on bladerunner1. The network widget as a configurable filter which can be used to observe load on <code>p2p2</code> only.</p>
+<p><img alt="dns-full" src="../../assets/dns-fullload.png" /></p>
+<h3 id="start-smartscaling">Start SmartScaling</h3>
+<p>We implemented a simple scaling algorithm in Scala and wrapped everything in a container. Code can be found in the <a href="https://github.com/att-innovate/torc-scripts/blob/master/docker/example-dns/smartscaling/src/main/scala/smartscaling.scala">torc-scripts example-dns</a>. The scaling optimizer retrieves data from InfluxDB and interacts with the DNS scheduler to start or kill a 2nd DNS server to handle the additional load.</p>
+<pre><code>localhost:$ ./run_smartscaling.sh
+</code></pre>
+<p>As soon as our scaling algorithm tells the scheduler to start a 2nd dns server we should see a dip in the load on our 1st DNS server.</p>
+<p><img alt="dns-scale-up" src="../../assets/dns-scale-up.png" /></p>
+<h3 id="decrease-load">Decrease Load</h3>
+<p>We will kill one of the load generators. Based on that the scaling algorithm should after a while kill the 2nd DNS server, which will slightly increase the load on the 1st DNS server.</p>
+<p>All can be observed using <a href="http://wedge:9091/#/?host=bladerunner1&amp;hostspec=localhost&amp;container=dns-sl1&amp;widgets=network.interface.bytes">Vector</a>.</p>
+<p><img alt="dns-scale-down" src="../../assets/dns-scale-down.png" /></p>
+<h3 id="stop-demo">Stop Demo</h3>
+<p>All the components related to the demo can be stopped by simply killing the DNS scheduler.</p>
+<pre><code>localhost:$ ./kill_dns_scheduler.sh
+</code></pre>
+<h3 id="some-insides">Some Insides</h3>
+<p>During the demo you can also observe the related changes and metrics using the admin UIs of the core services.</p>
+<h4 id="mesos-tasks"><a href="http://wedge:5050/#/">Mesos-Tasks</a></h4>
+<p>Shows the running DNS servers.</p>
+<p><img alt="dns-mesos-tasks" src="../../assets/dns-mesos-tasks.png" /></p>
+<h4 id="etcd-browser"><a href="http://wedge:8000">etcd-browser</a></h4>
+<p>Changes in global state, like routes for the containers, can be observed using <a href="http://wedge:8000">etcd-browser</a></p>
+<p><img alt="dns-etcd" src="../../assets/dns-etcd.png" /></p>
+<h4 id="snaproute"><a href="http://wedge:8080/public/v1/state/IPv4Routes">SnapRoute</a></h4>
+<p>Routes to the DNS related containers can also be checked in <a href="http://wedge:8080/public/v1/state/IPv4Routes">snap-routes</a></p>
+<p><img alt="dns-snaproute" src="../../assets/dns-snaproute.png" /></p>
+<h4 id="consul"><a href="http://wedge:8500/ui/#/dc1/nodes/wedge">Consul</a></h4>
+<p>To verify that the DNS related containers get their own DNS entry.</p>
+<p><img alt="dns-consul" src="../../assets/dns-consul.png" /></p>
+<h4 id="influxdb"><a href="http://bladerunner3:8083">InfluxDB</a></h4>
+<p>Provides a nice SQL interface to our use-case specific time-series.</p>
+<p><img alt="dns-influxdb" src="../../assets/dns-influxdb.png" /></p>
+<h4 id="and-thats-it">.. and that’s it.</h4></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>© 2016 AT&T All Rights Reserved.</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

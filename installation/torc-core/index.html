@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="http://att-innovate.github.io/torc/installation/torc-core/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>Install ToRC Core - ToRC</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">ToRC</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">Home</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Installation <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../installation/">Overview</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../wedge/">Provision Wedge</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../snaproute/">Configure SnapRoute</a>
+</li>
+
+                    
+                        
+<li class="active">
+    <a href="./">Install ToRC Core</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../compute/">Provision Compute Node</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../scheduler/">Restart Scheduler</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../explore/">Explore ToRC Services</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Example <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../example/dns/">DNS Infrastructure</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../reference/">Reference</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../construction/">Construction Sites</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../softwarehardware/">Software / Hardware</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../about/team/">Team</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../about/license/">License</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../snaproute/">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../compute/">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="http://github.com/att-innovate/torc">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#install-torc-core">Install ToRC Core</a></li>
+        
+            <li><a href="#build-docker-containers">Build Docker Containers</a></li>
+        
+            <li><a href="#run-core-containers">Run Core Containers</a></li>
+        
+            <li><a href="#verify-running-core-containers">Verify Running Core containers</a></li>
+        
+            <li><a href="#build-torc-scheduler">Build ToRC Scheduler</a></li>
+        
+            <li><a href="#run-torc-scheduler">Run ToRC Scheduler</a></li>
+        
+            <li><a href="#verify-torc-scheduler-activity">Verify ToRC Scheduler Activity</a></li>
+        
+            <li><a href="#stop-scheduler-and-core-services">Stop Scheduler and Core Services</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="install-torc-core">Install ToRC Core</h1>
+<h2 id="build-docker-containers">Build Docker Containers</h2>
+<h3 id="1-clone-torc-scripts">1. Clone torc-scripts</h3>
+<p>Ssh in to the wedge, and clone the torc-scripts repository.</p>
+<pre><code>root@wedge# cd ~
+root@wedge# git clone https://github.com/att-innovate/torc-scripts.git
+</code></pre>
+<h3 id="2-configure-dns-container">2. Configure DNS Container</h3>
+<p>If needed change the DNS configurations in the DNS/Consul container according to your setup. By default the configuration reflects our<a href="../installation/">setup</a>.</p>
+<p>Configurations can be found in <code>~/torc-scripts/docker/dns/provision</code></p>
+<h3 id="3-build-containers">3. Build Containers</h3>
+<pre><code>root@wedge# cd ~/torc-scripts/deploy/
+root@wedge# ./docker_build_master.sh
+</code></pre>
+<h2 id="run-core-containers">Run Core Containers</h2>
+<p>This will start the Mesos Master, Mesos Slave, and etcd container. We pass in the IP
+of the wedge as argument. For our <a href="../installation/">setup</a> it is 10.250.3.20.</p>
+<pre><code>root@wedge# ./run_core_master.sh 10.250.3.20
+</code></pre>
+<h2 id="verify-running-core-containers">Verify Running Core containers</h2>
+<p>Verify if things are up and running. This should list 3 processes.</p>
+<pre><code>root@wedge# docker ps
+</code></pre>
+<p>Test access to management ui of Mesos and etcd.</p>
+<ul>
+<li>Mesos Master: <a href="http://10.250.3.20:5050">http://10.250.3.20:5050</a></li>
+<li>etcd: <a href="http://10.250.3.20:8000">http://10.250.3.20:8000</a></li>
+</ul>
+<p>Finally we check if the Mesos Slave has correctly registered itself with the Master. Select <code>slaves</code> on Mesos Admin, and there should be one 1 slave listed.</p>
+<p><img alt="mesos-slave" src="../../assets/mesos-slave.png" /></p>
+<h2 id="build-torc-scheduler">Build ToRC Scheduler</h2>
+<p>This step will compile the ToRC Scheduler with the rust-compiler container and build
+the torc-scheduler container.</p>
+<pre><code>root@wedge# ./docker_build_scheduler_master.sh
+</code></pre>
+<p>Check if all the images show up as Docker images.</p>
+<pre><code>root@wedge# docker images
+</code></pre>
+<h2 id="run-torc-scheduler">Run ToRC Scheduler</h2>
+<p>We will start the scheduler with a minimal set of ToRC services. Details about the
+configurations of the ToRC scheduler can be found in the <a href="../../reference/">ToRC Reference</a> section.</p>
+<pre><code>root@wedge# ./run_scheduler_minimal_master.sh 10.250.3.20
+</code></pre>
+<p>In case you want to tail the logs use following command.</p>
+<pre><code>root@wedge# ./log_scheduler_master.sh
+</code></pre>
+<h2 id="verify-torc-scheduler-activity">Verify ToRC Scheduler Activity</h2>
+<p>Finally lets check if all the services came up correctly. The <a href="http://10.250.3.20:5050">Mesos Master UI</a> should list
+following tasks.</p>
+<p><img alt="mesos-minimal-tasks" src="../../assets/active-minimal-tasks.png" /></p>
+<p>The <a href="http://10.250.3.20:8500/ui/#/dc1/nodes/wedge">Consul/DNS Admin</a> page should list following service-specific DNS entries.</p>
+<p><img alt="consul-minimal-dns" src="../../assets/minimal-dns.png" /></p>
+<p>And <a href="http://10.250.3.20:9091/#/?widgets=kernel.all.cpu,kernel.percpu.cpu,kernel.all.runnable,kernel.all.load,network.interface.bytes,network.tcpconn,network.interface.packets,network.tcp.retrans,mem,mem.vmstat.pgfault,kernel.all.pswitch,disk.iops,disk.bytes,disk.dev.avactive,disk.dev.latency&amp;host=wedge&amp;hostspec=localhost">Vector</a> should be serving some metrics from our Wedge. Give them a few seconds to show up.</p>
+<p><img alt="vector-wedge" src="../../assets/vector-wedge.png" /></p>
+<h2 id="stop-scheduler-and-core-services">Stop Scheduler and Core Services</h2>
+<p>There are two scripts that can be used to shut-down the ToRC Scheduler and if necessary the Core Services. ToRC Scheduler relies on the Core Services therefor Core Services shouldn't be
+stopped when ToRC Scheduler is running. Stopping ToRC Scheduler also stops all the related sub-services, it is an easy way to "reset" your ToRC environment.</p>
+<pre><code>root@wedge# ./kill_scheduler_master.sh
+root@wedge# ./kill_core_master.sh
+</code></pre>
+<p>Next: <a href="../compute/">Provision Compute Nodes</a></p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>© 2016 AT&T All Rights Reserved.</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

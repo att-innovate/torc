@@ -1,0 +1,644 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "ToRC - Top of Rack Controller\n\n\nLow-Latency Computing at the Edge of the Network - Applications, Services, and Network Functions controlled by a Top-of-Rack Switch.\n\n\n\n\nThis project should serve as a blueprint, as a reference architecture for everyone interested in controlling a compute rack from its TOR switch.\n\n\nWe open sourced all the scripts needed to set it up plus all the software pieces written by us. A detailed list of all the projects can be found in the \nSoftware / Hardware\n section.\n\n\nBut be warned, all the code got written in a proof-of-concept context and therefore is not production-ready (yet).\n\n\nMotivation\n\n\nComputing at the Edge\n\n\nThe dynamic nature of ever increasing traffic over mobile networks requires highly reactive backends. Things like video-caching, anomaly detection, efficient bandwidth management, or even routing has to be handled much closer to the enduser, to the enduser device.\n\n\nLow latency requirements of many mobile related use-cases makes every roundtrip to the central data-center inefficient or even impossible, especially for any control flows.\n\n\nMicro-Server in every Device\n\n\nIn 2015 Facebook announced that they have built their own network switch. We obviously got curious about the reasons behind that decision. Luckily some insides can be found in a related blog post: \"\nOpen networking advances with Wedge and FBOSS\n\u201d.\n\n\n\n\nMany network operators we've spoken with share our goal of \nmanaging our networking devices and servers in the same way\n. With that goal in mind, we designed both \nWedge\n and \nFBOSS\n to closely resemble server hardware and server software, which has \nenabled us to deploy, monitor, and control these systems alongside our servers and storage\n.\n\n\n\n\nThe disintegration in to individual dedicate hardware-components for switching and device management (BMC) allowed Facebook to use a regular off-the-shelf micro-server for the control-plane.\n\n\nThis Intel-based micro-server with 8gb RAM and 120gb SSD became the enabling piece for our ToRC architecture.\n\n\nBuild, ship, and run on any Device\n\n\nDocker\n changed the way we package, deploy, and run services. We are finally in a position where we can run the same package, the same container on a switch and a regular compute node independent of underlying Linux kernel and libraries. This simplifies and streamlines not just the deployment of services but also provides a unique opportunity to decide at run time where to place and run a service.\n\n\nMetrics-driven Orchestration\n\n\nEase of Metrics Collection\n\n\nContainers out of the box come with metrics (cpu, memory, network). For pretty much the first time we are able to easily collect metrics on a service level.\n\n\nIf we add metrics collected by the switch and metrics from the compute nodes and stream everything in to a time-series database we end up with the data needed for informed control, placement, and optimization decisions.\n\n\nOrchestration - Separation of Concern\n\n\nIt gets easily overlooked that controlling software running on an infrastructure level is different from controlling a 3-tier web application. Therefore many of the popular container-orchestrators are too limiting and can\u2019t be used for our use-case.\n\n\nMesos\n offers a unique and powerful separation between resource-management and orchestration/scheduling. Resource-management is done by Mesos and orchestration is handled by an individually implemented use-case specific scheduler, called Mesos-frameworks. Those Mesos-frameworks, like the \u201cToRC Scheduler\u201d, provide a nice and easy way to encapsulate the logic needed to make informed control and placement decisions for specific use-cases and applications.\n\n\nCore Concepts\n\n\nA list of a few core concepts which serve as guiding principles for ToRC:\n\n\n\n\nFederation of Autonomous Racks\n\n\nTop-of-Rack Controller\n\n\nNo virtualization, minimal abstraction\n\n\nUnified view across network and compute state\n\n\nExtensive collection of metrics\n\n\nSelective state replication, selective routing\n\n\nScheduler Hierarchy, Control - Placement - Optimization\n\n\n\n\nFederation of Autonomous Racks\n\n\nEach rack serves as a self-contained \u201cdatacenter\u201d. It has all the core control and network functions needed to work as an autonomous entity.\n\n\nEach rack controls the visibility of its services and state.\n\n\nRacks can be bundled in groups. Groups share state in an eventual consistence way.\n\n\nTop-of-Rack Controller\n\n\nThe unique location of the Top-of-Rack switch and its importance for the whole rack makes it a perfect fit for any core controller functionality.\n\n\nNo virtualization, minimal abstraction\n\n\nTo guarantee low latency and high resource efficiency we avoid any virtualization technology like VM or Overlay Network. \n\n\nDocker is used to run services and L3 routing for its networking. Each container has its own routable IP address.\n\n\nOur code is written in Rust and Go. Both languages generate binary executables.\n\n\nWe carefully try to avoid any additional abstraction layer. Our code has to be able to benefit from each and every feature the underlying network or compute hardware offers. \n\n\nExtensive collection of metrics\n\n\nRealtime metrics are key for efficient orchestration. We collect  system, network, and container metrics and store them in a time-series database. Each rack has its own time-series database.\n\n\nUnified view across network and compute state\n\n\nEach rack maintains one unified view across states of all its different services, and network and compute resources. \n\n\nSelective state replication, selective routing\n\n\nOnly a subset of the state gets shared between racks using replication. If a scheduler decides that one of its services needs to be reachable from the other racks its route gets announced via the shared state.\n\n\nScheduler Hierarchy, Control - Placement - Optimization\n\n\nWe implemented a 3 layer scheduler hierarchy.\n\n\n\n\nThe \u201cToRC Scheduler\u201d runs on the switch and \ncontrols\n all the core services. It also handles all the interactions with the state database and the network-agent.\n\n\n\u201cSub-schedulers\u201d are responsible for the \nplacement\n of services serving a specific use-case, like the \nDNS example\n. \u201cSub-schedulers\u201d provide updates to the ToRC Scheduler about the state, placement, and configuration of their services.\n\n\n\u201cOptimizers\u201d constantly analyze the time-series data and the state of the rack. If they find a need for \noptimization\n, like scaling up a service or shutting off a node, they will interact with the correspondent scheduler to execute on those optimizations.\n\n\n\n\nConstruction Sites\n\n\nPlease refer to \nConstruction Sites\n for areas of on-going and future implementation work.",
+            "title": "Home"
+        },
+        {
+            "location": "/#torc-top-of-rack-controller",
+            "text": "Low-Latency Computing at the Edge of the Network - Applications, Services, and Network Functions controlled by a Top-of-Rack Switch.   This project should serve as a blueprint, as a reference architecture for everyone interested in controlling a compute rack from its TOR switch.  We open sourced all the scripts needed to set it up plus all the software pieces written by us. A detailed list of all the projects can be found in the  Software / Hardware  section.  But be warned, all the code got written in a proof-of-concept context and therefore is not production-ready (yet).",
+            "title": "ToRC - Top of Rack Controller"
+        },
+        {
+            "location": "/#motivation",
+            "text": "",
+            "title": "Motivation"
+        },
+        {
+            "location": "/#computing-at-the-edge",
+            "text": "The dynamic nature of ever increasing traffic over mobile networks requires highly reactive backends. Things like video-caching, anomaly detection, efficient bandwidth management, or even routing has to be handled much closer to the enduser, to the enduser device.  Low latency requirements of many mobile related use-cases makes every roundtrip to the central data-center inefficient or even impossible, especially for any control flows.",
+            "title": "Computing at the Edge"
+        },
+        {
+            "location": "/#micro-server-in-every-device",
+            "text": "In 2015 Facebook announced that they have built their own network switch. We obviously got curious about the reasons behind that decision. Luckily some insides can be found in a related blog post: \" Open networking advances with Wedge and FBOSS \u201d.   Many network operators we've spoken with share our goal of  managing our networking devices and servers in the same way . With that goal in mind, we designed both  Wedge  and  FBOSS  to closely resemble server hardware and server software, which has  enabled us to deploy, monitor, and control these systems alongside our servers and storage .   The disintegration in to individual dedicate hardware-components for switching and device management (BMC) allowed Facebook to use a regular off-the-shelf micro-server for the control-plane.  This Intel-based micro-server with 8gb RAM and 120gb SSD became the enabling piece for our ToRC architecture.",
+            "title": "Micro-Server in every Device"
+        },
+        {
+            "location": "/#build-ship-and-run-on-any-device",
+            "text": "Docker  changed the way we package, deploy, and run services. We are finally in a position where we can run the same package, the same container on a switch and a regular compute node independent of underlying Linux kernel and libraries. This simplifies and streamlines not just the deployment of services but also provides a unique opportunity to decide at run time where to place and run a service.",
+            "title": "Build, ship, and run on any Device"
+        },
+        {
+            "location": "/#metrics-driven-orchestration",
+            "text": "",
+            "title": "Metrics-driven Orchestration"
+        },
+        {
+            "location": "/#ease-of-metrics-collection",
+            "text": "Containers out of the box come with metrics (cpu, memory, network). For pretty much the first time we are able to easily collect metrics on a service level.  If we add metrics collected by the switch and metrics from the compute nodes and stream everything in to a time-series database we end up with the data needed for informed control, placement, and optimization decisions.",
+            "title": "Ease of Metrics Collection"
+        },
+        {
+            "location": "/#orchestration-separation-of-concern",
+            "text": "It gets easily overlooked that controlling software running on an infrastructure level is different from controlling a 3-tier web application. Therefore many of the popular container-orchestrators are too limiting and can\u2019t be used for our use-case.  Mesos  offers a unique and powerful separation between resource-management and orchestration/scheduling. Resource-management is done by Mesos and orchestration is handled by an individually implemented use-case specific scheduler, called Mesos-frameworks. Those Mesos-frameworks, like the \u201cToRC Scheduler\u201d, provide a nice and easy way to encapsulate the logic needed to make informed control and placement decisions for specific use-cases and applications.",
+            "title": "Orchestration - Separation of Concern"
+        },
+        {
+            "location": "/#core-concepts",
+            "text": "A list of a few core concepts which serve as guiding principles for ToRC:   Federation of Autonomous Racks  Top-of-Rack Controller  No virtualization, minimal abstraction  Unified view across network and compute state  Extensive collection of metrics  Selective state replication, selective routing  Scheduler Hierarchy, Control - Placement - Optimization",
+            "title": "Core Concepts"
+        },
+        {
+            "location": "/#federation-of-autonomous-racks",
+            "text": "Each rack serves as a self-contained \u201cdatacenter\u201d. It has all the core control and network functions needed to work as an autonomous entity.  Each rack controls the visibility of its services and state.  Racks can be bundled in groups. Groups share state in an eventual consistence way.",
+            "title": "Federation of Autonomous Racks"
+        },
+        {
+            "location": "/#top-of-rack-controller",
+            "text": "The unique location of the Top-of-Rack switch and its importance for the whole rack makes it a perfect fit for any core controller functionality.",
+            "title": "Top-of-Rack Controller"
+        },
+        {
+            "location": "/#no-virtualization-minimal-abstraction",
+            "text": "To guarantee low latency and high resource efficiency we avoid any virtualization technology like VM or Overlay Network.   Docker is used to run services and L3 routing for its networking. Each container has its own routable IP address.  Our code is written in Rust and Go. Both languages generate binary executables.  We carefully try to avoid any additional abstraction layer. Our code has to be able to benefit from each and every feature the underlying network or compute hardware offers.",
+            "title": "No virtualization, minimal abstraction"
+        },
+        {
+            "location": "/#extensive-collection-of-metrics",
+            "text": "Realtime metrics are key for efficient orchestration. We collect  system, network, and container metrics and store them in a time-series database. Each rack has its own time-series database.",
+            "title": "Extensive collection of metrics"
+        },
+        {
+            "location": "/#unified-view-across-network-and-compute-state",
+            "text": "Each rack maintains one unified view across states of all its different services, and network and compute resources.",
+            "title": "Unified view across network and compute state"
+        },
+        {
+            "location": "/#selective-state-replication-selective-routing",
+            "text": "Only a subset of the state gets shared between racks using replication. If a scheduler decides that one of its services needs to be reachable from the other racks its route gets announced via the shared state.",
+            "title": "Selective state replication, selective routing"
+        },
+        {
+            "location": "/#scheduler-hierarchy-control-placement-optimization",
+            "text": "We implemented a 3 layer scheduler hierarchy.   The \u201cToRC Scheduler\u201d runs on the switch and  controls  all the core services. It also handles all the interactions with the state database and the network-agent.  \u201cSub-schedulers\u201d are responsible for the  placement  of services serving a specific use-case, like the  DNS example . \u201cSub-schedulers\u201d provide updates to the ToRC Scheduler about the state, placement, and configuration of their services.  \u201cOptimizers\u201d constantly analyze the time-series data and the state of the rack. If they find a need for  optimization , like scaling up a service or shutting off a node, they will interact with the correspondent scheduler to execute on those optimizations.",
+            "title": "Scheduler Hierarchy, Control - Placement - Optimization"
+        },
+        {
+            "location": "/#construction-sites",
+            "text": "Please refer to  Construction Sites  for areas of on-going and future implementation work.",
+            "title": "Construction Sites"
+        },
+        {
+            "location": "/installation/installation/",
+            "text": "Installation Overview\n\n\nAll the scripts and all the documentation provided is based on the following setup.\n\n\n\n\nPrepare your local machine\n\n\nTo simplify interaction with this specific setup we suggest to add following entries to the local \n/etc/hosts\n file.\n\n\n10.250.1.111 wedge-mgmt\n\n10.250.3.20 wedge wedge.homer.ave\n10.250.3.21 bladerunner1 bladerunner1.homer.ave\n10.250.3.22 bladerunner2 bladerunner2.homer.ave\n10.250.3.23 bladerunner3 bladerunner3.homer.ave\n10.250.3.24 bladerunner4 bladerunner4.homer.ave\n\n\n\nProvision Wedge\n\n\nInstallation of OS, Network Agent, and Docker runtime on the Wedge switch.\n\n\nConfigure SnapRoute\n\n\nConfiguration of ports, interfaces, and vlan according to our demo setup.\n\n\nInstall ToRC Core\n\n\nInstallation of the ToRC Core Services like Mesos, etcd, ToRC Scheduler, or DNS.\n\n\nProvision Compute Node\n\n\nProvision the compute nodes with the ToRC base software like Mesos, Calico, or pcp.\n\n\nRestart Scheduler\n\n\nRestart ToRC Scheduler with full the full set of features and services.\n\n\nExplore ToRC Services\n\n\nLet\u2019s explore the ToRC Core Services.",
+            "title": "Overview"
+        },
+        {
+            "location": "/installation/installation/#installation-overview",
+            "text": "All the scripts and all the documentation provided is based on the following setup.",
+            "title": "Installation Overview"
+        },
+        {
+            "location": "/installation/installation/#prepare-your-local-machine",
+            "text": "To simplify interaction with this specific setup we suggest to add following entries to the local  /etc/hosts  file.  10.250.1.111 wedge-mgmt\n\n10.250.3.20 wedge wedge.homer.ave\n10.250.3.21 bladerunner1 bladerunner1.homer.ave\n10.250.3.22 bladerunner2 bladerunner2.homer.ave\n10.250.3.23 bladerunner3 bladerunner3.homer.ave\n10.250.3.24 bladerunner4 bladerunner4.homer.ave",
+            "title": "Prepare your local machine"
+        },
+        {
+            "location": "/installation/installation/#provision-wedge",
+            "text": "Installation of OS, Network Agent, and Docker runtime on the Wedge switch.",
+            "title": "Provision Wedge"
+        },
+        {
+            "location": "/installation/installation/#configure-snaproute",
+            "text": "Configuration of ports, interfaces, and vlan according to our demo setup.",
+            "title": "Configure SnapRoute"
+        },
+        {
+            "location": "/installation/installation/#install-torc-core",
+            "text": "Installation of the ToRC Core Services like Mesos, etcd, ToRC Scheduler, or DNS.",
+            "title": "Install ToRC Core"
+        },
+        {
+            "location": "/installation/installation/#provision-compute-node",
+            "text": "Provision the compute nodes with the ToRC base software like Mesos, Calico, or pcp.",
+            "title": "Provision Compute Node"
+        },
+        {
+            "location": "/installation/installation/#restart-scheduler",
+            "text": "Restart ToRC Scheduler with full the full set of features and services.",
+            "title": "Restart Scheduler"
+        },
+        {
+            "location": "/installation/installation/#explore-torc-services",
+            "text": "Let\u2019s explore the ToRC Core Services.",
+            "title": "Explore ToRC Services"
+        },
+        {
+            "location": "/installation/wedge/",
+            "text": "Provision Wedge\n\n\nThis document describes the installation of OS, Network Agent, and Docker runtime on the Wedge switch.\n\n\nAs a side note, we run \nFBOSS\n as the network agent for quite some time in our setup. After \nbattling build issues\n with every release of FBOSS and after the positive experience with \nSnapRoute\n running on ONL we decided to completely switch to SnapRoute as our network agent.\n\n\nPrerequisites\n\n\nWe assume that the Wedge is connected via the BMC ethernet port, that the BMC got an IP assigned, and you have access via ssh to the BMC. \n\n\nSnapRoute / ONL\n\n\nInstall ONIE\n\n\nONIE\n, the Open Network Install Environment is a bare metal installation environment. It provides an easy way to install a network operating system on a whitebox switch like the Wedge.\n\n\nTo install ONIE please follow the steps as outlined on the \nONL site\n. But only install ONIE, refer to the next \nsection\n for the install of ONL.\n\n\nInstall ONL\n\n\n1) SSH in to the BMC of your Wedge.\n\n\n2) Reset the micro-server and enter the \u201cONIE interactive mode\u201d\n\n\nroot@bmc:~# wedge_power.sh reset\nroot@bmc:~# sol.sh\n\n\n\nWait for the \nGNU Grub\n screen show up.\n\n\nSelect \nONIE\n and select \nONIE Rescue\n\n\n3) Install ONL\n\n\nONIE:/ # install_url http://opennetlinux.org/binaries/latest-wedge-2.0.installer\n\n\n\nAfter the installation the micro-server will reboot in to ONL. Btw, to see some \u201ccompletion wait timed out\u201d warnings is normal.\n\n\nConfigure ONL\n\n\nLog in to the micro server with user \nroot\n and password \nonl\n.\n\n\n1) Change root password\n\n\nroot@localhost:~# passwd\n\n\n\n2) Setup hostname\n\n\nEdit \n/etc/hostname\n and change it to \nwedge\n\n\nEdit \n/etc/hosts\n. Add \nwedge\n after \nlocalhost\n and add your compute nodes according to your \nsetup\n.\n\n\n127.0.0.1 localhost wedge\n10.250.3.21 bladerunner1 bladerunner1.homer.ave\n10.250.3.22 bladerunner2 bladerunner2.homer.ave\n10.250.3.23 bladerunner3 bladerunner3.homer.ave\n10.250.3.24 bladerunner4 bladerunner4.homer.ave\n\n\n\n3) Set up management network\n\n\nWe will configure the network of the micro-server with a static address (10.250.1.111), according our \nsetup\n.\n\n\nEdit \n/mnt/flash/boot-config\n\n\nNETDEV=ma1\nNETAUTO=\nNETIP=10.250.1.111\nNETMASK=255.255.0.0\nNETGW=10.250.1.1\nBOOTMODE=installed\nSWI=dir:/mnt/flash2/ONL\n\n\n\nEdit \n/etc/resolvconf/resolv.conf.d/tail\n to add your global DNS server, example: \nnameserver 64.6.64.6\n\n\n4) Reboot micro server\n\n\nPress \nctrl-x\n to get back to the BMC console, and reset the micro server.\n\n\nroot@bmc:~# wedge_power.sh reset\nroot@bmc:~# sol.sh\n\n\n\n5) Add mqueue support for Performance Co-Pilot\n\n\nroot@wedge:~# mkdir /dev/mqueue\nroot@wedge:~# mount -t mqueue none /dev/mqueue\n\n\n\n6) Enable SSH for remote access to micro server\n\n\nEdit \n/etc/ssh/sshd_config\n and set \nPermitRootLogin\n to \nyes\n and restart ssh.\n\n\nroot@wedge:~# /etc/init.d/ssh restart\n\n\n\nInstall Docker\n\n\nroot@wedge:~# apt-get update\nroot@wedge:~# apt-get install -y docker-engine\n\n\n\nVerify that Docker is running\n\n\nroot@wedge:~# docker info\n\n\n\nInstall SnapRoute\n\n\nroot@wedge:~# wget -P /tmp https://github.com/OpenSnaproute/binaries/raw/master/wedge40/kernel_3.18.25/flexswitch_accton_wedge40-1.0.0.114_amd64.deb\nroot@wedge:~# dpkg -i /tmp/flexswitch_accton_wedge40-1.0.0.114_amd64.deb\n\n\n\nThere will be errors about missing dependencies, following command will fix this.\n\n\nroot@wedge:~# apt-get -f install\n\n\n\nThat\u2019s it, next: \nConfigure SnapRoute\n.",
+            "title": "Provision Wedge"
+        },
+        {
+            "location": "/installation/wedge/#provision-wedge",
+            "text": "This document describes the installation of OS, Network Agent, and Docker runtime on the Wedge switch.  As a side note, we run  FBOSS  as the network agent for quite some time in our setup. After  battling build issues  with every release of FBOSS and after the positive experience with  SnapRoute  running on ONL we decided to completely switch to SnapRoute as our network agent.",
+            "title": "Provision Wedge"
+        },
+        {
+            "location": "/installation/wedge/#prerequisites",
+            "text": "We assume that the Wedge is connected via the BMC ethernet port, that the BMC got an IP assigned, and you have access via ssh to the BMC.",
+            "title": "Prerequisites"
+        },
+        {
+            "location": "/installation/wedge/#snaproute-onl",
+            "text": "",
+            "title": "SnapRoute / ONL"
+        },
+        {
+            "location": "/installation/wedge/#install-onie",
+            "text": "ONIE , the Open Network Install Environment is a bare metal installation environment. It provides an easy way to install a network operating system on a whitebox switch like the Wedge.  To install ONIE please follow the steps as outlined on the  ONL site . But only install ONIE, refer to the next  section  for the install of ONL.",
+            "title": "Install ONIE"
+        },
+        {
+            "location": "/installation/wedge/#install-onl",
+            "text": "1) SSH in to the BMC of your Wedge.  2) Reset the micro-server and enter the \u201cONIE interactive mode\u201d  root@bmc:~# wedge_power.sh reset\nroot@bmc:~# sol.sh  Wait for the  GNU Grub  screen show up.  Select  ONIE  and select  ONIE Rescue  3) Install ONL  ONIE:/ # install_url http://opennetlinux.org/binaries/latest-wedge-2.0.installer  After the installation the micro-server will reboot in to ONL. Btw, to see some \u201ccompletion wait timed out\u201d warnings is normal.",
+            "title": "Install ONL"
+        },
+        {
+            "location": "/installation/wedge/#configure-onl",
+            "text": "Log in to the micro server with user  root  and password  onl .  1) Change root password  root@localhost:~# passwd  2) Setup hostname  Edit  /etc/hostname  and change it to  wedge  Edit  /etc/hosts . Add  wedge  after  localhost  and add your compute nodes according to your  setup .  127.0.0.1 localhost wedge\n10.250.3.21 bladerunner1 bladerunner1.homer.ave\n10.250.3.22 bladerunner2 bladerunner2.homer.ave\n10.250.3.23 bladerunner3 bladerunner3.homer.ave\n10.250.3.24 bladerunner4 bladerunner4.homer.ave  3) Set up management network  We will configure the network of the micro-server with a static address (10.250.1.111), according our  setup .  Edit  /mnt/flash/boot-config  NETDEV=ma1\nNETAUTO=\nNETIP=10.250.1.111\nNETMASK=255.255.0.0\nNETGW=10.250.1.1\nBOOTMODE=installed\nSWI=dir:/mnt/flash2/ONL  Edit  /etc/resolvconf/resolv.conf.d/tail  to add your global DNS server, example:  nameserver 64.6.64.6  4) Reboot micro server  Press  ctrl-x  to get back to the BMC console, and reset the micro server.  root@bmc:~# wedge_power.sh reset\nroot@bmc:~# sol.sh  5) Add mqueue support for Performance Co-Pilot  root@wedge:~# mkdir /dev/mqueue\nroot@wedge:~# mount -t mqueue none /dev/mqueue  6) Enable SSH for remote access to micro server  Edit  /etc/ssh/sshd_config  and set  PermitRootLogin  to  yes  and restart ssh.  root@wedge:~# /etc/init.d/ssh restart",
+            "title": "Configure ONL"
+        },
+        {
+            "location": "/installation/wedge/#install-docker",
+            "text": "root@wedge:~# apt-get update\nroot@wedge:~# apt-get install -y docker-engine  Verify that Docker is running  root@wedge:~# docker info",
+            "title": "Install Docker"
+        },
+        {
+            "location": "/installation/wedge/#install-snaproute",
+            "text": "root@wedge:~# wget -P /tmp https://github.com/OpenSnaproute/binaries/raw/master/wedge40/kernel_3.18.25/flexswitch_accton_wedge40-1.0.0.114_amd64.deb\nroot@wedge:~# dpkg -i /tmp/flexswitch_accton_wedge40-1.0.0.114_amd64.deb  There will be errors about missing dependencies, following command will fix this.  root@wedge:~# apt-get -f install  That\u2019s it, next:  Configure SnapRoute .",
+            "title": "Install SnapRoute"
+        },
+        {
+            "location": "/installation/snaproute/",
+            "text": "Configure SnapRoute\n\n\nWe use SnapRoute as our network agent. This document describes the configuration of SnapRoute according to our demo \nsetup\n.\n\n\nWe assume that the wedge is accessible via \nwedge-mgmt\n IP as outlined in \nProvision Wedge\n. \n\n\nVerify that SnapRoute is running\n\n\nRetrieve the SnapRoute SystemStatus from your wedge using \nhttp://wedge-mgmt:8080/public/v1/state/SystemStatus\n. And software versions can be retrieved at \nhttp://wedge-mgmt:8080/public/v1/state/SystemSwVersion\n.\n\n\nBtw, a browser extensions like \nJSONView\n can help in formatting the output in a more human-readable way.\n\n\nIf SnapRoute is not running please refer to \nWedge Installation\n.\n\n\nConfigure Port Speed\n\n\nAccording to our demo \nsetup\n all ports will be configured as 10gb port, port 1 for the \u2018outside\u2019 traffic and Port 6-9 for the communication with the compute nodes within the rack.\n\n\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort1\", \"BreakOutMode\":\"4x10\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort1s1\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\n\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2\", \"BreakOutMode\":\"4x10\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s1\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s2\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s3\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s4\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\n\n\n\nConfigure Vlan\n\n\nAccording to our demo \nsetup\n we assign all the ports to \nvlan100\n, and add an interface for the wedge at \n10.250.3.20\n. That interface will be used by the compute notes to communicate with the ToRC services running on the wedge.\n\n\ncurl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"VlanId\":100,\"UntagIntfList\":[\"1, 6-9\"]}' 'http://wedge-mgmt:8080/public/v1/config/Vlan'\n\ncurl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"vlan100\",\"IpAddr\":\"10.250.3.20/24\"}' 'http://wedge-mgmt:8080/public/v1/config/IPv4Intf'\n\n\n\nNext: \nInstall ToRC Core\n.",
+            "title": "Configure SnapRoute"
+        },
+        {
+            "location": "/installation/snaproute/#configure-snaproute",
+            "text": "We use SnapRoute as our network agent. This document describes the configuration of SnapRoute according to our demo  setup .  We assume that the wedge is accessible via  wedge-mgmt  IP as outlined in  Provision Wedge .",
+            "title": "Configure SnapRoute"
+        },
+        {
+            "location": "/installation/snaproute/#verify-that-snaproute-is-running",
+            "text": "Retrieve the SnapRoute SystemStatus from your wedge using  http://wedge-mgmt:8080/public/v1/state/SystemStatus . And software versions can be retrieved at  http://wedge-mgmt:8080/public/v1/state/SystemSwVersion .  Btw, a browser extensions like  JSONView  can help in formatting the output in a more human-readable way.  If SnapRoute is not running please refer to  Wedge Installation .",
+            "title": "Verify that SnapRoute is running"
+        },
+        {
+            "location": "/installation/snaproute/#configure-port-speed",
+            "text": "According to our demo  setup  all ports will be configured as 10gb port, port 1 for the \u2018outside\u2019 traffic and Port 6-9 for the communication with the compute nodes within the rack.  curl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort1\", \"BreakOutMode\":\"4x10\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort1s1\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\n\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2\", \"BreakOutMode\":\"4x10\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s1\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s2\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s3\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'\ncurl -X PATCH --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"fpPort2s4\", \"Speed\":10000, \"AdminState\" : \"UP\"}' 'http://wedge-mgmt:8080/public/v1/config/Port'",
+            "title": "Configure Port Speed"
+        },
+        {
+            "location": "/installation/snaproute/#configure-vlan",
+            "text": "According to our demo  setup  we assign all the ports to  vlan100 , and add an interface for the wedge at  10.250.3.20 . That interface will be used by the compute notes to communicate with the ToRC services running on the wedge.  curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"VlanId\":100,\"UntagIntfList\":[\"1, 6-9\"]}' 'http://wedge-mgmt:8080/public/v1/config/Vlan'\n\ncurl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{\"IntfRef\":\"vlan100\",\"IpAddr\":\"10.250.3.20/24\"}' 'http://wedge-mgmt:8080/public/v1/config/IPv4Intf'  Next:  Install ToRC Core .",
+            "title": "Configure Vlan"
+        },
+        {
+            "location": "/installation/torc-core/",
+            "text": "Install ToRC Core\n\n\nBuild Docker Containers\n\n\n1. Clone torc-scripts\n\n\nSsh in to the wedge, and clone the torc-scripts repository.\n\n\nroot@wedge# cd ~\nroot@wedge# git clone https://github.com/att-innovate/torc-scripts.git\n\n\n\n2. Configure DNS Container\n\n\nIf needed change the DNS configurations in the DNS/Consul container according to your setup. By default the configuration reflects our\nsetup\n.\n\n\nConfigurations can be found in \n~/torc-scripts/docker/dns/provision\n\n\n3. Build Containers\n\n\nroot@wedge# cd ~/torc-scripts/deploy/\nroot@wedge# ./docker_build_master.sh\n\n\n\nRun Core Containers\n\n\nThis will start the Mesos Master, Mesos Slave, and etcd container. We pass in the IP\nof the wedge as argument. For our \nsetup\n it is 10.250.3.20.\n\n\nroot@wedge# ./run_core_master.sh 10.250.3.20\n\n\n\nVerify Running Core containers\n\n\nVerify if things are up and running. This should list 3 processes.\n\n\nroot@wedge# docker ps\n\n\n\nTest access to management ui of Mesos and etcd.\n\n\n\n\nMesos Master: \nhttp://10.250.3.20:5050\n\n\netcd: \nhttp://10.250.3.20:8000\n\n\n\n\nFinally we check if the Mesos Slave has correctly registered itself with the Master. Select \nslaves\n on Mesos Admin, and there should be one 1 slave listed.\n\n\n\n\nBuild ToRC Scheduler\n\n\nThis step will compile the ToRC Scheduler with the rust-compiler container and build\nthe torc-scheduler container.\n\n\nroot@wedge# ./docker_build_scheduler_master.sh\n\n\n\nCheck if all the images show up as Docker images.\n\n\nroot@wedge# docker images\n\n\n\nRun ToRC Scheduler\n\n\nWe will start the scheduler with a minimal set of ToRC services. Details about the\nconfigurations of the ToRC scheduler can be found in the \nToRC Reference\n section.\n\n\nroot@wedge# ./run_scheduler_minimal_master.sh 10.250.3.20\n\n\n\nIn case you want to tail the logs use following command.\n\n\nroot@wedge# ./log_scheduler_master.sh\n\n\n\nVerify ToRC Scheduler Activity\n\n\nFinally lets check if all the services came up correctly. The \nMesos Master UI\n should list\nfollowing tasks.\n\n\n\n\nThe \nConsul/DNS Admin\n page should list following service-specific DNS entries.\n\n\n\n\nAnd \nVector\n should be serving some metrics from our Wedge. Give them a few seconds to show up.\n\n\n\n\nStop Scheduler and Core Services\n\n\nThere are two scripts that can be used to shut-down the ToRC Scheduler and if necessary the Core Services. ToRC Scheduler relies on the Core Services therefor Core Services shouldn't be\nstopped when ToRC Scheduler is running. Stopping ToRC Scheduler also stops all the related sub-services, it is an easy way to \"reset\" your ToRC environment.\n\n\nroot@wedge# ./kill_scheduler_master.sh\nroot@wedge# ./kill_core_master.sh\n\n\n\nNext: \nProvision Compute Nodes",
+            "title": "Install ToRC Core"
+        },
+        {
+            "location": "/installation/torc-core/#install-torc-core",
+            "text": "",
+            "title": "Install ToRC Core"
+        },
+        {
+            "location": "/installation/torc-core/#build-docker-containers",
+            "text": "",
+            "title": "Build Docker Containers"
+        },
+        {
+            "location": "/installation/torc-core/#1-clone-torc-scripts",
+            "text": "Ssh in to the wedge, and clone the torc-scripts repository.  root@wedge# cd ~\nroot@wedge# git clone https://github.com/att-innovate/torc-scripts.git",
+            "title": "1. Clone torc-scripts"
+        },
+        {
+            "location": "/installation/torc-core/#2-configure-dns-container",
+            "text": "If needed change the DNS configurations in the DNS/Consul container according to your setup. By default the configuration reflects our setup .  Configurations can be found in  ~/torc-scripts/docker/dns/provision",
+            "title": "2. Configure DNS Container"
+        },
+        {
+            "location": "/installation/torc-core/#3-build-containers",
+            "text": "root@wedge# cd ~/torc-scripts/deploy/\nroot@wedge# ./docker_build_master.sh",
+            "title": "3. Build Containers"
+        },
+        {
+            "location": "/installation/torc-core/#run-core-containers",
+            "text": "This will start the Mesos Master, Mesos Slave, and etcd container. We pass in the IP\nof the wedge as argument. For our  setup  it is 10.250.3.20.  root@wedge# ./run_core_master.sh 10.250.3.20",
+            "title": "Run Core Containers"
+        },
+        {
+            "location": "/installation/torc-core/#verify-running-core-containers",
+            "text": "Verify if things are up and running. This should list 3 processes.  root@wedge# docker ps  Test access to management ui of Mesos and etcd.   Mesos Master:  http://10.250.3.20:5050  etcd:  http://10.250.3.20:8000   Finally we check if the Mesos Slave has correctly registered itself with the Master. Select  slaves  on Mesos Admin, and there should be one 1 slave listed.",
+            "title": "Verify Running Core containers"
+        },
+        {
+            "location": "/installation/torc-core/#build-torc-scheduler",
+            "text": "This step will compile the ToRC Scheduler with the rust-compiler container and build\nthe torc-scheduler container.  root@wedge# ./docker_build_scheduler_master.sh  Check if all the images show up as Docker images.  root@wedge# docker images",
+            "title": "Build ToRC Scheduler"
+        },
+        {
+            "location": "/installation/torc-core/#run-torc-scheduler",
+            "text": "We will start the scheduler with a minimal set of ToRC services. Details about the\nconfigurations of the ToRC scheduler can be found in the  ToRC Reference  section.  root@wedge# ./run_scheduler_minimal_master.sh 10.250.3.20  In case you want to tail the logs use following command.  root@wedge# ./log_scheduler_master.sh",
+            "title": "Run ToRC Scheduler"
+        },
+        {
+            "location": "/installation/torc-core/#verify-torc-scheduler-activity",
+            "text": "Finally lets check if all the services came up correctly. The  Mesos Master UI  should list\nfollowing tasks.   The  Consul/DNS Admin  page should list following service-specific DNS entries.   And  Vector  should be serving some metrics from our Wedge. Give them a few seconds to show up.",
+            "title": "Verify ToRC Scheduler Activity"
+        },
+        {
+            "location": "/installation/torc-core/#stop-scheduler-and-core-services",
+            "text": "There are two scripts that can be used to shut-down the ToRC Scheduler and if necessary the Core Services. ToRC Scheduler relies on the Core Services therefor Core Services shouldn't be\nstopped when ToRC Scheduler is running. Stopping ToRC Scheduler also stops all the related sub-services, it is an easy way to \"reset\" your ToRC environment.  root@wedge# ./kill_scheduler_master.sh\nroot@wedge# ./kill_core_master.sh  Next:  Provision Compute Nodes",
+            "title": "Stop Scheduler and Core Services"
+        },
+        {
+            "location": "/installation/compute/",
+            "text": "Provision Compute Node\n\n\nThis will guide you through the installation of ToRC related services and software packages on a ToRC compute node.\n\n\nPrerequisites\n\n\n\n\nVerify that ToRC-Controller and services are up and running on your wedge. Information can be found in \nToRC Core Software Installation\n\n\nCompute node has Ubuntu 14.04 installed\n\n\nCompute node has a fixed IP address assigned to your 10Gb port. That is based on our \nToRC setup\n, change accordingly.\n\n\n\n\nVerify \n/etc/network/interfaces\n, example for bladerunner1:\n\n\nauto p2p2\niface p2p2 inet static\n    address 10.250.3.21\n    netmask 255.255.0.0\n    network 10.250.0.0\n    broadcast 10.250.3.255\n    gateway 10.250.1.1\n    dns-nameservers 10.250.3.20\n    dns-search homer.ave\n\n\n\n\n\n\n\nOn compute node verify \n/etc/hosts\n, example bladerunner1:\n\n\n127.0.0.1   localhost bladerunner1\n\n\n\n\n\n\nAdmin user \nbladerunner\n got created on compute node\n\n\n\n\nReboot compute node in case you have changed any of the settings.\n\n\n\n\nSoftware Installation\n\n\nFor this example we setup \nbladerunner1\n, check with your \nToRC setup\n.\n\n\n1. Ssh in to compute node\n\n\n2. Clone \ntorc-scripts\n\n\nInstall git and checkout repository\n\n\nbladerunner@bladerunner1:~$ sudo apt-get install -y git\nbladerunner@bladerunner1:~$ git clone https://github.com/att-innovate/torc-scripts.git\n\n\n\n3. Run software install script\n\n\n10.250.3.20 should correspond with the IP address of the wedge. Replace HOST_NAME with the correct hostname, for example bladerunner1.\n\n\nbladerunner@bladerunner1:~$ cd torc-scripts/deploy/\nbladerunner@bladerunner1:~/torc-scripts/deploy$ sudo ./install-compute.sh 10.250.3.20 HOST_NAME lab\n\n\n\n4. Reboot\n\n\nbladerunner@bladerunner1:~$ sudo reboot\n\n\n\n5. Ssh back in to compute node and install ToRC related Docker containers\n\n\nBtw, most of the subsequent calls require root privileges. I suggest to get in to a root shell.\n\n\nbladerunner@bladerunner1:~$ sudo -s\n\n\n\nInstall containers:\n\n\nbladerunner@bladerunner1:~$ cd torc-scripts/deploy/\nbladerunner@bladerunner1:~/torc-scripts/deploy$ ./docker_build_slaves.sh\n\n\n\n6. Verify Docker images\n\n\nCheck for the influxdb, datacollector, and charmander-pcp\n\n\nbladerunner@bladerunner1:~$ docker images\n\n\n\nCalico / Network-Plugin Configuration\n\n\n1. Check that \netcd\n on the Wedge is running. Additional\n\n\nInformation can be found in [ToRC Core Software Installation].\ncore-software-installation\n\n\nbladerunner@bladerunner1:~$ ping etcd.service.torc\n\n\n\n2. Set environment to point to etcd running on the wedge.\n\n\nbladerunner@bladerunner1:~$ cd ~\nbladerunner@bladerunner1:~$ export ETCD_AUTHORITY=etcd.service.torc:2379\n\n\n\n3. Start Calico\n\n\nbladerunner@bladerunner1:~$ ./calicoctl node --libnetwork\n\n\n\n4. Configure Calico and the Docker Network\n\n\nThat is only necessary when you install your first compute node\n! All subsequent nodes will get their information from etcd on the wedge.\n\n\nSetup an IP address pool for the Docker containers.\n\n\nbladerunner@bladerunner1:~$ ./calicoctl pool add 192.168.0.0/16  --nat-outgoing\n\n\n\nYou can verify if things are set up correctly with following call which should return information for one pool.\n\n\nbladerunner@bladerunner1:~$ ./calicoctl pool show\n\n\n\nLet Docker know about the Calico network plugin.\n\n\nbladerunner@bladerunner1:~$ docker network create --driver calico --ipam-driver calico torc\n\n\n\nVerify by listing known Docker networks. A network named torc should show up.\n\n\nbladerunner@bladerunner1:~$ docker network ls\n\n\n\nYou can also check \netcd\n for entries for \ndocker\n and \ncalico\n.\n\n\nThat\u2019s it\n\n\nThat new compute node should show up on the \nMesos\n UI in the list of slaves, example bladerunner2.\n\n\n\n\nNext: \nRestart Scheduler",
+            "title": "Provision Compute Node"
+        },
+        {
+            "location": "/installation/compute/#provision-compute-node",
+            "text": "This will guide you through the installation of ToRC related services and software packages on a ToRC compute node.",
+            "title": "Provision Compute Node"
+        },
+        {
+            "location": "/installation/compute/#prerequisites",
+            "text": "Verify that ToRC-Controller and services are up and running on your wedge. Information can be found in  ToRC Core Software Installation  Compute node has Ubuntu 14.04 installed  Compute node has a fixed IP address assigned to your 10Gb port. That is based on our  ToRC setup , change accordingly.   Verify  /etc/network/interfaces , example for bladerunner1:  auto p2p2\niface p2p2 inet static\n    address 10.250.3.21\n    netmask 255.255.0.0\n    network 10.250.0.0\n    broadcast 10.250.3.255\n    gateway 10.250.1.1\n    dns-nameservers 10.250.3.20\n    dns-search homer.ave    On compute node verify  /etc/hosts , example bladerunner1:  127.0.0.1   localhost bladerunner1    Admin user  bladerunner  got created on compute node   Reboot compute node in case you have changed any of the settings.",
+            "title": "Prerequisites"
+        },
+        {
+            "location": "/installation/compute/#software-installation",
+            "text": "For this example we setup  bladerunner1 , check with your  ToRC setup .",
+            "title": "Software Installation"
+        },
+        {
+            "location": "/installation/compute/#1-ssh-in-to-compute-node",
+            "text": "",
+            "title": "1. Ssh in to compute node"
+        },
+        {
+            "location": "/installation/compute/#2-clone-torc-scripts",
+            "text": "Install git and checkout repository  bladerunner@bladerunner1:~$ sudo apt-get install -y git\nbladerunner@bladerunner1:~$ git clone https://github.com/att-innovate/torc-scripts.git",
+            "title": "2. Clone torc-scripts"
+        },
+        {
+            "location": "/installation/compute/#3-run-software-install-script",
+            "text": "10.250.3.20 should correspond with the IP address of the wedge. Replace HOST_NAME with the correct hostname, for example bladerunner1.  bladerunner@bladerunner1:~$ cd torc-scripts/deploy/\nbladerunner@bladerunner1:~/torc-scripts/deploy$ sudo ./install-compute.sh 10.250.3.20 HOST_NAME lab",
+            "title": "3. Run software install script"
+        },
+        {
+            "location": "/installation/compute/#4-reboot",
+            "text": "bladerunner@bladerunner1:~$ sudo reboot",
+            "title": "4. Reboot"
+        },
+        {
+            "location": "/installation/compute/#5-ssh-back-in-to-compute-node-and-install-torc-related-docker-containers",
+            "text": "Btw, most of the subsequent calls require root privileges. I suggest to get in to a root shell.  bladerunner@bladerunner1:~$ sudo -s  Install containers:  bladerunner@bladerunner1:~$ cd torc-scripts/deploy/\nbladerunner@bladerunner1:~/torc-scripts/deploy$ ./docker_build_slaves.sh",
+            "title": "5. Ssh back in to compute node and install ToRC related Docker containers"
+        },
+        {
+            "location": "/installation/compute/#6-verify-docker-images",
+            "text": "Check for the influxdb, datacollector, and charmander-pcp  bladerunner@bladerunner1:~$ docker images",
+            "title": "6. Verify Docker images"
+        },
+        {
+            "location": "/installation/compute/#calico-network-plugin-configuration",
+            "text": "",
+            "title": "Calico / Network-Plugin Configuration"
+        },
+        {
+            "location": "/installation/compute/#1-check-that-etcd-on-the-wedge-is-running-additional",
+            "text": "Information can be found in [ToRC Core Software Installation]. core-software-installation  bladerunner@bladerunner1:~$ ping etcd.service.torc",
+            "title": "1. Check that etcd on the Wedge is running. Additional"
+        },
+        {
+            "location": "/installation/compute/#2-set-environment-to-point-to-etcd-running-on-the-wedge",
+            "text": "bladerunner@bladerunner1:~$ cd ~\nbladerunner@bladerunner1:~$ export ETCD_AUTHORITY=etcd.service.torc:2379",
+            "title": "2. Set environment to point to etcd running on the wedge."
+        },
+        {
+            "location": "/installation/compute/#3-start-calico",
+            "text": "bladerunner@bladerunner1:~$ ./calicoctl node --libnetwork",
+            "title": "3. Start Calico"
+        },
+        {
+            "location": "/installation/compute/#4-configure-calico-and-the-docker-network",
+            "text": "That is only necessary when you install your first compute node ! All subsequent nodes will get their information from etcd on the wedge.  Setup an IP address pool for the Docker containers.  bladerunner@bladerunner1:~$ ./calicoctl pool add 192.168.0.0/16  --nat-outgoing  You can verify if things are set up correctly with following call which should return information for one pool.  bladerunner@bladerunner1:~$ ./calicoctl pool show  Let Docker know about the Calico network plugin.  bladerunner@bladerunner1:~$ docker network create --driver calico --ipam-driver calico torc  Verify by listing known Docker networks. A network named torc should show up.  bladerunner@bladerunner1:~$ docker network ls  You can also check  etcd  for entries for  docker  and  calico .",
+            "title": "4. Configure Calico and the Docker Network"
+        },
+        {
+            "location": "/installation/compute/#thats-it",
+            "text": "That new compute node should show up on the  Mesos  UI in the list of slaves, example bladerunner2.   Next:  Restart Scheduler",
+            "title": "That\u2019s it"
+        },
+        {
+            "location": "/installation/scheduler/",
+            "text": "Restart Scheduler\n\n\nDuring our installation phase we had the ToRC-scheduler running in a minimal mode. The main purpose of the minimal mode is to have a DNS server running during the installation of the compute nodes. Now that we have all compute nodes up and running and connected to Mesos we can re-start ToRC using the regular configuration.\n\n\nCheck that all nodes are up\n\n\nUse \nMesos Admin UI\n to verify that \nall\n slaves (compute & wedge) are up and connected before you proceed.\n\n\n\n\nVerify Scheduler Configuration\n\n\nLog in to the wedge and edit the scheduler configuration file.\n\n\nroot@wedge:~# cd ~/torc-scripts/docker/torc-scheduler/provision/\nroot@wedge:~/torc-scripts/docker/torc-scheduler/provision# vi config.yml\n\n\n\nVerify that the compute node settings are correct. By default they match our \ndemo setup\n.\n\n\nnodes:\n- name: wedge\n  ip: $MASTER_IP\n  type: master\n- name: bladerunner1\n  ip: 10.250.3.21\n  type: slave\n- name: bladerunner2\n  ip: 10.250.3.22\n  type: slave\n- name: bladerunner3\n  ip: 10.250.3.23\n  type: slave\n- name: bladerunner4\n  ip: 10.250.3.24\n  type: slave\n\n\n\nRebuild the docker image for the ToRC Scheduler. The config files are part of the container image.\n\n\nroot@wedge:~# cd ~/torc-scripts/deploy\nroot@wedge:~/torc-scripts/deploy# ./docker_build_scheduler_master.sh\n\n\n\nKill torc-scheduler and restart with standard configuration. Replace 10.250.3.20 with the IP of your wedge.\n\n\nroot@wedge:~/torc-scripts/deploy# ./kill_scheduler_master.sh\nroot@wedge:~/torc-scripts/deploy# ./run_scheduler_master.sh 10.250.3.20\n\n\n\nLog file can be checked using following script. Press ctrl-c to stop the log output.\n\n\nroot@wedge:~/torc-scripts/deploy# ./log_scheduler_master.sh\n\n\n\nUse \nMesos Admin\n to check that all ToRC core services are up and running.\n\n\n\n\nNext, let\u2019s \nexplore\n the functionality offered by the ToRC core services.",
+            "title": "Restart Scheduler"
+        },
+        {
+            "location": "/installation/scheduler/#restart-scheduler",
+            "text": "During our installation phase we had the ToRC-scheduler running in a minimal mode. The main purpose of the minimal mode is to have a DNS server running during the installation of the compute nodes. Now that we have all compute nodes up and running and connected to Mesos we can re-start ToRC using the regular configuration.",
+            "title": "Restart Scheduler"
+        },
+        {
+            "location": "/installation/scheduler/#check-that-all-nodes-are-up",
+            "text": "Use  Mesos Admin UI  to verify that  all  slaves (compute & wedge) are up and connected before you proceed.",
+            "title": "Check that all nodes are up"
+        },
+        {
+            "location": "/installation/scheduler/#verify-scheduler-configuration",
+            "text": "Log in to the wedge and edit the scheduler configuration file.  root@wedge:~# cd ~/torc-scripts/docker/torc-scheduler/provision/\nroot@wedge:~/torc-scripts/docker/torc-scheduler/provision# vi config.yml  Verify that the compute node settings are correct. By default they match our  demo setup .  nodes:\n- name: wedge\n  ip: $MASTER_IP\n  type: master\n- name: bladerunner1\n  ip: 10.250.3.21\n  type: slave\n- name: bladerunner2\n  ip: 10.250.3.22\n  type: slave\n- name: bladerunner3\n  ip: 10.250.3.23\n  type: slave\n- name: bladerunner4\n  ip: 10.250.3.24\n  type: slave  Rebuild the docker image for the ToRC Scheduler. The config files are part of the container image.  root@wedge:~# cd ~/torc-scripts/deploy\nroot@wedge:~/torc-scripts/deploy# ./docker_build_scheduler_master.sh  Kill torc-scheduler and restart with standard configuration. Replace 10.250.3.20 with the IP of your wedge.  root@wedge:~/torc-scripts/deploy# ./kill_scheduler_master.sh\nroot@wedge:~/torc-scripts/deploy# ./run_scheduler_master.sh 10.250.3.20  Log file can be checked using following script. Press ctrl-c to stop the log output.  root@wedge:~/torc-scripts/deploy# ./log_scheduler_master.sh  Use  Mesos Admin  to check that all ToRC core services are up and running.   Next, let\u2019s  explore  the functionality offered by the ToRC core services.",
+            "title": "Verify Scheduler Configuration"
+        },
+        {
+            "location": "/installation/explore/",
+            "text": "Explore ToRC Services\n\n\nLet\u2019s explore the ToRC Core Services and its functions. \n\n\nMesos\n\n\nMesos serves as the main resource manager for our rack. It also provides Admin-UIs for resource-usage of:\n\n\nRunning Tasks\n\n\n\n\nActive Frameworks/Schedulers\n, like our ToRC Scheduler\n\n\n\n\nConnected Slaves\n\n\n\n\nDNS / \nConsul\n\n\nThe DNS service contains a regular bind9 service responsible for the nodes in our \nhomer.ave\n domain, and the Consul service, which handles all the lookups for all the containers, services in the \nservice.torc\n domain, like \netcd.service.torc\n.\n\n\nThe \nConsul Admin UI\n offers a list of all know services in the service domain.\n\n\n\n\nIf you ssh in to one of the compute nodes you should now be able to ping ToRC related services and nodes:\n\n\nbladerunner@bladerunner1:~$ ping wedge.homer.ave\nbladerunner@bladerunner1:~$ ping etcd.service.torc\n\n\n\netcd\n / \nstatesync\n\n\netcd serves as our \nstate-soup\n. It provides a unified view across the operational state of containers, machine, and network.\n\n\nstatesync constantly collects data from the network agent and the ToRC Scheduler and pushes it to etcd.\n\n\netcd also gets used by Docker and Calico to share network configuration across all the compute nodes.\n\n\nThe \netcd-browser\n provides a UI to inspect the data stored in etcd.\n\n\n\n\nQuery ToRC\u2019s etcd at \nhttp://wedge:8000\n\n\nPerformance CoPilot\n / \nVector\n\n\nPerformance CoPilot (pcp) collects and provides access to system metrics for hosts and containers. Each of the machines including the wedge have a pcp agent running to collect those metrics.\n\n\nVector is a performance monitoring UI which provides access to different metrics served by the pcp agents on each machine.\n\n\n\n\nThe default dashboards for:\n\n\n\n\nwedge\n\n\nbladerunner1\n\n\nbladerunner2\n\n\nbladerunner3\n\n\nbladerunner4\n\n\n\n\nInfluxDB\n / \ndatacollector\n\n\nWe use InfluxDB as our time-series database. The datacollector agent constantly pulls a defined set of machine and container related metrics and stores them in InfluxDB.\n\n\nThose time series can be used for scaling decisions, to detect anomalies, or any other automated optimization. Please check out our \nDNS Example\n. \n\n\nImportant: We use an older version of InfluxDB, \nv0.8.8\n. We haven\u2019t upgraded yet because of major breaking changes in their API.\n\n\nInfluxDB offers a UI to query and visualize the stored metrics.\n\n\n\n\nIn our \ndemo setup\n we run InfluxDB on \nbladerunner3\n with username \nroot\n and password \nroot\n, and the name of our database name is \ntorc\n.\n\n\nLogin at: \nhttp://bladerunner3:8083\n and select \nExplore Data\n for the \ntorc\n database.\n\n\nSome Sample Queries:\n\n\nlist series\n\nselect * from machine where hostname = 'bladerunner1' limit 1000\n\nselect * from network where hostname = 'bladerunner1' and interface_name = 'p2p2' limit 1000\n\n\n\nToRC Scheduler\n\n\nThe ToRC Scheduler is responsible for starting and supervising all these core services. It also serves as the endpoint for all the sub-schedulers, for example the \nDNS-Scheduler\n.\n\n\nThe ToRC Scheduler offers some status pages in json. Btw, a browser extensions like \nJSONView\n helps in formatting the output in a more human-readable way.\n\n\n\n\nList Services: \nhttp://wedge:3000/services/running\n\n\nList Compute Nodes: \nhttp://wedge:3000/nodes\n \n\n\n\n\nNext: \nDNS Scheduler Example\n.",
+            "title": "Explore ToRC Services"
+        },
+        {
+            "location": "/installation/explore/#explore-torc-services",
+            "text": "Let\u2019s explore the ToRC Core Services and its functions.",
+            "title": "Explore ToRC Services"
+        },
+        {
+            "location": "/installation/explore/#mesos",
+            "text": "Mesos serves as the main resource manager for our rack. It also provides Admin-UIs for resource-usage of:",
+            "title": "Mesos"
+        },
+        {
+            "location": "/installation/explore/#running-tasks",
+            "text": "",
+            "title": "Running Tasks"
+        },
+        {
+            "location": "/installation/explore/#active-frameworksschedulers-like-our-torc-scheduler",
+            "text": "",
+            "title": "Active Frameworks/Schedulers, like our ToRC Scheduler"
+        },
+        {
+            "location": "/installation/explore/#connected-slaves",
+            "text": "",
+            "title": "Connected Slaves"
+        },
+        {
+            "location": "/installation/explore/#dns-consul",
+            "text": "The DNS service contains a regular bind9 service responsible for the nodes in our  homer.ave  domain, and the Consul service, which handles all the lookups for all the containers, services in the  service.torc  domain, like  etcd.service.torc .  The  Consul Admin UI  offers a list of all know services in the service domain.   If you ssh in to one of the compute nodes you should now be able to ping ToRC related services and nodes:  bladerunner@bladerunner1:~$ ping wedge.homer.ave\nbladerunner@bladerunner1:~$ ping etcd.service.torc",
+            "title": "DNS / Consul"
+        },
+        {
+            "location": "/installation/explore/#etcd-statesync",
+            "text": "etcd serves as our  state-soup . It provides a unified view across the operational state of containers, machine, and network.  statesync constantly collects data from the network agent and the ToRC Scheduler and pushes it to etcd.  etcd also gets used by Docker and Calico to share network configuration across all the compute nodes.  The  etcd-browser  provides a UI to inspect the data stored in etcd.   Query ToRC\u2019s etcd at  http://wedge:8000",
+            "title": "etcd / statesync"
+        },
+        {
+            "location": "/installation/explore/#performance-copilot-vector",
+            "text": "Performance CoPilot (pcp) collects and provides access to system metrics for hosts and containers. Each of the machines including the wedge have a pcp agent running to collect those metrics.  Vector is a performance monitoring UI which provides access to different metrics served by the pcp agents on each machine.   The default dashboards for:   wedge  bladerunner1  bladerunner2  bladerunner3  bladerunner4",
+            "title": "Performance CoPilot / Vector"
+        },
+        {
+            "location": "/installation/explore/#influxdb-datacollector",
+            "text": "We use InfluxDB as our time-series database. The datacollector agent constantly pulls a defined set of machine and container related metrics and stores them in InfluxDB.  Those time series can be used for scaling decisions, to detect anomalies, or any other automated optimization. Please check out our  DNS Example .   Important: We use an older version of InfluxDB,  v0.8.8 . We haven\u2019t upgraded yet because of major breaking changes in their API.  InfluxDB offers a UI to query and visualize the stored metrics.   In our  demo setup  we run InfluxDB on  bladerunner3  with username  root  and password  root , and the name of our database name is  torc .  Login at:  http://bladerunner3:8083  and select  Explore Data  for the  torc  database.  Some Sample Queries:  list series\n\nselect * from machine where hostname = 'bladerunner1' limit 1000\n\nselect * from network where hostname = 'bladerunner1' and interface_name = 'p2p2' limit 1000",
+            "title": "InfluxDB / datacollector"
+        },
+        {
+            "location": "/installation/explore/#torc-scheduler",
+            "text": "The ToRC Scheduler is responsible for starting and supervising all these core services. It also serves as the endpoint for all the sub-schedulers, for example the  DNS-Scheduler .  The ToRC Scheduler offers some status pages in json. Btw, a browser extensions like  JSONView  helps in formatting the output in a more human-readable way.   List Services:  http://wedge:3000/services/running  List Compute Nodes:  http://wedge:3000/nodes     Next:  DNS Scheduler Example .",
+            "title": "ToRC Scheduler"
+        },
+        {
+            "location": "/example/dns/",
+            "text": "DNS Example\n\n\nWe use an external face-ing DNS cluster scenario as our demo use-case for ToRC. This demo will provide some insides in to sub-schedulers, optimization components, and sub-networking.\n\n\n\n\nComponents / Services\n\n\nAll the components in blue in the diagram above are part of this use-case. They all get deployed as Docker containers using Mesos which interacts with our schedulers.\n\n\n\n\nDNS Scheduler: Orchestrates placement of demo services.\n\n\nDNS Service: Simple bind9 daemon.\n\n\nLoad-generator: Generates DNS specific load and spreads it equally across the running demo DNS servers. \n\n\nSmartscaling: Observes network load on each demo DNS server. The necessary date gets read from InfluxDB, and based on that data decisions get made about when to add or remove additional DNS servers. It interacts with the DNS Scheduler to execute on those insights.\n\n\n\n\nInstallation\n\n\nPrerequisites\n\n\nIt is assumed that all the ToRC Core services are deployed and up and running. Please refer to the corresponding \nToRC Core\n section in the   installation guide.\n\n\nBuild Containers\n\n\nAll the scripts we are using are built according to our \ndemo setup\n. If you setup differs you will have to change the scripts accordingly.\n\n\nCheckout \ntorc-scripts\n repository on your local host:\n\n\nlocalhost:$ git clone https://github.com/att-innovate/torc-scripts.git\n\n\n\nFor simplification instead of using a Docker registry we use a script that ssh in to the different hosts and runs \ndocker build\n for all the required containers.\n\n\nThe list of hosts can be found in \n./torc-scripts/deploy/example-dns/slaves.txt\n.\n\n\nlocalhost:~$ cd torc-scripts/deploy/example-dns/\nlocalhost:~/torc-scripts/example-dns/$ ./docker_build_slaves.sh\n\n\n\nThe script will ask for the password for the default user (bladerunner) and for sudo, which is required for building of the containers.\n\n\nDeploy DNS-Scheduler\n\n\nThe DNS-Scheduler works with a default configuration aligned to our \ndemo setup\n and the diagram about the DNS use-case \nabove\n. We will be installing the DNS-Scheduler on \nbladerunner3\n according to the \ndiagram above\n and use \nbladerunner1\n and \nbladerunner2\n for our DNS servers.\n\n\nDetails about the DNS-Scheduler configuration can be found in \ntorc-scripts/docker/example-dns/torc-dns-scheduler/provision/config.yml\n on \nbladerunner3\n.\n\n\nlocalhost:$ ssh bladerunner@bladerunner3\nbladerunner@bladerunner3:~$ sudo ./torc-scripts/deploy/example-dns/onnode/docker_build_dns_scheduler_slave.sh\n\n\n\nVerify that all the necessary images got built by listing the docker images.\n\n\nbladerunner@bladerunner3:~$ sudo docker images\n\n\n\nRun DNS-Scheduler\n\n\nThe DNS-Scheduler can get started by using the ToRC-Scheduler API. Following script will use that API to get it started. You can run it from your localhost.\n\n\nlocalhost:$ ./torc-scripts/demo/run_dns_scheduler.sh\n\n\n\nIf you check the \nMesos Frameworks\n page you should see the DNS-Scheduler showing up.\n\n\n\n\nThe DNS-Scheduler itself will start up a first dns server on bladerunner1, which can be seen on the \nMesos Tasks\n page.\n\n\n\n\nThis first dns server \ndns-sl1.service.torc\n like any use-case specific container will get an internal IP in form of \n192.168.2.xxx\n which can be checked via \nConsul UI\n.\n\n\nBy default we also configure /32 routes for those containers. This can be checked via \nSnapRoute Config\n.\n\n\nDemo\n\n\nThe demo setup uses a simple \u201cOptimizer\u201d to scale our DNS cluster based on the collected metrics.\n\n\nThe demo will also provide some insides in to the inner-workings of ToRC and its core services.\n\n\nAll the scripts needed are in the \ntorc-scripts/demo\n folder, and as always, the scripts are specifically written for our demo setup, see \ndiagram above\n, but can be changed according to your setup.\n\n\nRestart DNS-Scheduler\n\n\nLets start with a fresh state. Change in to your local \ntorc-scripts/demo\n folder, and restart the scheduler.\n\n\nlocalhost:$ ./kill_dns_scheduler.sh\nlocalhost:$ ./run_dns_scheduler.sh\n\n\n\nUse \nMesos-Tasks\n to verify that the scheduler and dns-sl1 server are up and running.\n\n\nAdd DNS Load\n\n\nNext we start two load-generators to put some DNS load on to our DNS server. Those scripts will interact with the DNS Scheduler to have the corresponding services started.\n\n\nlocalhost:$ ./run_normalload200.sh\nlocalhost:$ ./run_normalload400.sh\n\n\n\nVector\n can be used to observe the network load on the dns server on bladerunner1. The network widget as a configurable filter which can be used to observe load on \np2p2\n only.\n\n\n\n\nStart SmartScaling\n\n\nWe implemented a simple scaling algorithm in Scala and wrapped everything in a container. Code can be found in the \ntorc-scripts example-dns\n. The scaling optimizer retrieves data from InfluxDB and interacts with the DNS scheduler to start or kill a 2nd DNS server to handle the additional load.\n\n\nlocalhost:$ ./run_smartscaling.sh\n\n\n\nAs soon as our scaling algorithm tells the scheduler to start a 2nd dns server we should see a dip in the load on our 1st DNS server.\n\n\n\n\nDecrease Load\n\n\nWe will kill one of the load generators. Based on that the scaling algorithm should after a while kill the 2nd DNS server, which will slightly increase the load on the 1st DNS server.\n\n\nAll can be observed using \nVector\n.\n\n\n\n\nStop Demo\n\n\nAll the components related to the demo can be stopped by simply killing the DNS scheduler.\n\n\nlocalhost:$ ./kill_dns_scheduler.sh\n\n\n\nSome Insides\n\n\nDuring the demo you can also observe the related changes and metrics using the admin UIs of the core services.\n\n\nMesos-Tasks\n\n\nShows the running DNS servers.\n\n\n\n\netcd-browser\n\n\nChanges in global state, like routes for the containers, can be observed using \netcd-browser\n\n\n\n\nSnapRoute\n\n\nRoutes to the DNS related containers can also be checked in \nsnap-routes\n\n\n\n\nConsul\n\n\nTo verify that the DNS related containers get their own DNS entry.\n\n\n\n\nInfluxDB\n\n\nProvides a nice SQL interface to our use-case specific time-series.\n\n\n\n\n.. and that\u2019s it.",
+            "title": "DNS Infrastructure"
+        },
+        {
+            "location": "/example/dns/#dns-example",
+            "text": "We use an external face-ing DNS cluster scenario as our demo use-case for ToRC. This demo will provide some insides in to sub-schedulers, optimization components, and sub-networking.",
+            "title": "DNS Example"
+        },
+        {
+            "location": "/example/dns/#components-services",
+            "text": "All the components in blue in the diagram above are part of this use-case. They all get deployed as Docker containers using Mesos which interacts with our schedulers.   DNS Scheduler: Orchestrates placement of demo services.  DNS Service: Simple bind9 daemon.  Load-generator: Generates DNS specific load and spreads it equally across the running demo DNS servers.   Smartscaling: Observes network load on each demo DNS server. The necessary date gets read from InfluxDB, and based on that data decisions get made about when to add or remove additional DNS servers. It interacts with the DNS Scheduler to execute on those insights.",
+            "title": "Components / Services"
+        },
+        {
+            "location": "/example/dns/#installation",
+            "text": "",
+            "title": "Installation"
+        },
+        {
+            "location": "/example/dns/#prerequisites",
+            "text": "It is assumed that all the ToRC Core services are deployed and up and running. Please refer to the corresponding  ToRC Core  section in the   installation guide.",
+            "title": "Prerequisites"
+        },
+        {
+            "location": "/example/dns/#build-containers",
+            "text": "All the scripts we are using are built according to our  demo setup . If you setup differs you will have to change the scripts accordingly.  Checkout  torc-scripts  repository on your local host:  localhost:$ git clone https://github.com/att-innovate/torc-scripts.git  For simplification instead of using a Docker registry we use a script that ssh in to the different hosts and runs  docker build  for all the required containers.  The list of hosts can be found in  ./torc-scripts/deploy/example-dns/slaves.txt .  localhost:~$ cd torc-scripts/deploy/example-dns/\nlocalhost:~/torc-scripts/example-dns/$ ./docker_build_slaves.sh  The script will ask for the password for the default user (bladerunner) and for sudo, which is required for building of the containers.",
+            "title": "Build Containers"
+        },
+        {
+            "location": "/example/dns/#deploy-dns-scheduler",
+            "text": "The DNS-Scheduler works with a default configuration aligned to our  demo setup  and the diagram about the DNS use-case  above . We will be installing the DNS-Scheduler on  bladerunner3  according to the  diagram above  and use  bladerunner1  and  bladerunner2  for our DNS servers.  Details about the DNS-Scheduler configuration can be found in  torc-scripts/docker/example-dns/torc-dns-scheduler/provision/config.yml  on  bladerunner3 .  localhost:$ ssh bladerunner@bladerunner3\nbladerunner@bladerunner3:~$ sudo ./torc-scripts/deploy/example-dns/onnode/docker_build_dns_scheduler_slave.sh  Verify that all the necessary images got built by listing the docker images.  bladerunner@bladerunner3:~$ sudo docker images",
+            "title": "Deploy DNS-Scheduler"
+        },
+        {
+            "location": "/example/dns/#run-dns-scheduler",
+            "text": "The DNS-Scheduler can get started by using the ToRC-Scheduler API. Following script will use that API to get it started. You can run it from your localhost.  localhost:$ ./torc-scripts/demo/run_dns_scheduler.sh  If you check the  Mesos Frameworks  page you should see the DNS-Scheduler showing up.   The DNS-Scheduler itself will start up a first dns server on bladerunner1, which can be seen on the  Mesos Tasks  page.   This first dns server  dns-sl1.service.torc  like any use-case specific container will get an internal IP in form of  192.168.2.xxx  which can be checked via  Consul UI .  By default we also configure /32 routes for those containers. This can be checked via  SnapRoute Config .",
+            "title": "Run DNS-Scheduler"
+        },
+        {
+            "location": "/example/dns/#demo",
+            "text": "The demo setup uses a simple \u201cOptimizer\u201d to scale our DNS cluster based on the collected metrics.  The demo will also provide some insides in to the inner-workings of ToRC and its core services.  All the scripts needed are in the  torc-scripts/demo  folder, and as always, the scripts are specifically written for our demo setup, see  diagram above , but can be changed according to your setup.",
+            "title": "Demo"
+        },
+        {
+            "location": "/example/dns/#restart-dns-scheduler",
+            "text": "Lets start with a fresh state. Change in to your local  torc-scripts/demo  folder, and restart the scheduler.  localhost:$ ./kill_dns_scheduler.sh\nlocalhost:$ ./run_dns_scheduler.sh  Use  Mesos-Tasks  to verify that the scheduler and dns-sl1 server are up and running.",
+            "title": "Restart DNS-Scheduler"
+        },
+        {
+            "location": "/example/dns/#add-dns-load",
+            "text": "Next we start two load-generators to put some DNS load on to our DNS server. Those scripts will interact with the DNS Scheduler to have the corresponding services started.  localhost:$ ./run_normalload200.sh\nlocalhost:$ ./run_normalload400.sh  Vector  can be used to observe the network load on the dns server on bladerunner1. The network widget as a configurable filter which can be used to observe load on  p2p2  only.",
+            "title": "Add DNS Load"
+        },
+        {
+            "location": "/example/dns/#start-smartscaling",
+            "text": "We implemented a simple scaling algorithm in Scala and wrapped everything in a container. Code can be found in the  torc-scripts example-dns . The scaling optimizer retrieves data from InfluxDB and interacts with the DNS scheduler to start or kill a 2nd DNS server to handle the additional load.  localhost:$ ./run_smartscaling.sh  As soon as our scaling algorithm tells the scheduler to start a 2nd dns server we should see a dip in the load on our 1st DNS server.",
+            "title": "Start SmartScaling"
+        },
+        {
+            "location": "/example/dns/#decrease-load",
+            "text": "We will kill one of the load generators. Based on that the scaling algorithm should after a while kill the 2nd DNS server, which will slightly increase the load on the 1st DNS server.  All can be observed using  Vector .",
+            "title": "Decrease Load"
+        },
+        {
+            "location": "/example/dns/#stop-demo",
+            "text": "All the components related to the demo can be stopped by simply killing the DNS scheduler.  localhost:$ ./kill_dns_scheduler.sh",
+            "title": "Stop Demo"
+        },
+        {
+            "location": "/example/dns/#some-insides",
+            "text": "During the demo you can also observe the related changes and metrics using the admin UIs of the core services.",
+            "title": "Some Insides"
+        },
+        {
+            "location": "/example/dns/#mesos-tasks",
+            "text": "Shows the running DNS servers.",
+            "title": "Mesos-Tasks"
+        },
+        {
+            "location": "/example/dns/#etcd-browser",
+            "text": "Changes in global state, like routes for the containers, can be observed using  etcd-browser",
+            "title": "etcd-browser"
+        },
+        {
+            "location": "/example/dns/#snaproute",
+            "text": "Routes to the DNS related containers can also be checked in  snap-routes",
+            "title": "SnapRoute"
+        },
+        {
+            "location": "/example/dns/#consul",
+            "text": "To verify that the DNS related containers get their own DNS entry.",
+            "title": "Consul"
+        },
+        {
+            "location": "/example/dns/#influxdb",
+            "text": "Provides a nice SQL interface to our use-case specific time-series.",
+            "title": "InfluxDB"
+        },
+        {
+            "location": "/example/dns/#and-thats-it",
+            "text": "",
+            "title": ".. and that\u2019s it."
+        },
+        {
+            "location": "/reference/",
+            "text": "Reference\n\n\n.. still working on getting this finalized ..",
+            "title": "Reference"
+        },
+        {
+            "location": "/reference/#reference",
+            "text": ".. still working on getting this finalized ..",
+            "title": "Reference"
+        },
+        {
+            "location": "/construction/",
+            "text": "Construction Sites\n\n\nDeployment\n\n\n\n\nAutomate bare-metal deployment of compute nodes.\n\n\nEvaluate the use of Terraform & Cobbler.\n\n\n\n\nScheduling\n\n\n\n\nFactor out core components of our ToRC schedulers.\n\n\nBuild a generic module for Rust to implement ToRC/Mesos Frameworks.\n\n\n\n\nLogging\n\n\n\n\nMake logging a core service.\n\n\nEvaluate the use of ELK.\n\n\n\n\nState\n\n\n\n\nShared state between racks: Move from a strongly consistent model to an eventual consistent one.\n\n\nEvaluate Riak as store for shared state.\n\n\nImplement handling of external facing services in statesync.\n\n\n\n\nNetwork\n\n\n\n\nImplement selective route-dissemination.\n\n\nOnly services of type \"world\" will be accessible from outside of the rack.\n\n\nEvaluate extension of SnapRoute\u2019s BGP daemon.",
+            "title": "Construction Sites"
+        },
+        {
+            "location": "/construction/#construction-sites",
+            "text": "",
+            "title": "Construction Sites"
+        },
+        {
+            "location": "/construction/#deployment",
+            "text": "Automate bare-metal deployment of compute nodes.  Evaluate the use of Terraform & Cobbler.",
+            "title": "Deployment"
+        },
+        {
+            "location": "/construction/#scheduling",
+            "text": "Factor out core components of our ToRC schedulers.  Build a generic module for Rust to implement ToRC/Mesos Frameworks.",
+            "title": "Scheduling"
+        },
+        {
+            "location": "/construction/#logging",
+            "text": "Make logging a core service.  Evaluate the use of ELK.",
+            "title": "Logging"
+        },
+        {
+            "location": "/construction/#state",
+            "text": "Shared state between racks: Move from a strongly consistent model to an eventual consistent one.  Evaluate Riak as store for shared state.  Implement handling of external facing services in statesync.",
+            "title": "State"
+        },
+        {
+            "location": "/construction/#network",
+            "text": "Implement selective route-dissemination.  Only services of type \"world\" will be accessible from outside of the rack.  Evaluate extension of SnapRoute\u2019s BGP daemon.",
+            "title": "Network"
+        },
+        {
+            "location": "/softwarehardware/",
+            "text": "Software / Hardware List\n\n\nA list of Open Source Software and Open Hardware used by ToRC.\n\n\nOpen Hardware\n\n\n\n\nEdge-Core Wedge-16X 40GbE Data Center Switch\n \n\n\n\n\nToRC Open Source Projects\n\n\n\n\ntorc-scripts\n\n\n\n\nExternal Open Source Software\n\n\n\n\nOnie - Open Network Install Environment\n\n\nONL - Open Network Linux\n\n\nSnapRoute\n\n\nApache Mesos\n\n\nDocker\n\n\nRust Prgramming Language\n\n\nGo Programming Language\n\n\nVector\n\n\nPerformance CoPilot\n\n\nConsul\n\n\netcd\n\n\netcd-browser\n\n\nInfluxDB\n\n\nCalico\n\n\n\n\nDocumentation\n\n\n\n\nMkDocs\n\n\nFlatly Theme",
+            "title": "Software / Hardware"
+        },
+        {
+            "location": "/softwarehardware/#software-hardware-list",
+            "text": "A list of Open Source Software and Open Hardware used by ToRC.",
+            "title": "Software / Hardware List"
+        },
+        {
+            "location": "/softwarehardware/#open-hardware",
+            "text": "Edge-Core Wedge-16X 40GbE Data Center Switch",
+            "title": "Open Hardware"
+        },
+        {
+            "location": "/softwarehardware/#torc-open-source-projects",
+            "text": "torc-scripts",
+            "title": "ToRC Open Source Projects"
+        },
+        {
+            "location": "/softwarehardware/#external-open-source-software",
+            "text": "Onie - Open Network Install Environment  ONL - Open Network Linux  SnapRoute  Apache Mesos  Docker  Rust Prgramming Language  Go Programming Language  Vector  Performance CoPilot  Consul  etcd  etcd-browser  InfluxDB  Calico",
+            "title": "External Open Source Software"
+        },
+        {
+            "location": "/softwarehardware/#documentation",
+            "text": "MkDocs  Flatly Theme",
+            "title": "Documentation"
+        },
+        {
+            "location": "/about/team/",
+            "text": "Team\n\n\nAT&T Foundry in Palo Alto, CA, USA\n\n\nMarcel Neuhausler (Lead)\n\n\n\n\nControl - ToRC & DNS-Scheduler\n\n\nNetwork - SnapRoute, FBOSS, Consul/DNS\n\n\nDeployment - Scripts, Configuration\n\n\n\n\nJulius Mueller\n\n\n\n\nState - etcd, statesync\n\n\nNetwork - Calico\n\n\n\n\nHenry Chang\n\n\n\n\nMetrics - Vector, Performance CoPilot, datacollector, InfluxDB\n\n\n\n\nKaren Yang (Intern)\n\n\n\n\nDNS-Example - smartscaling, loadgenerator",
+            "title": "Team"
+        },
+        {
+            "location": "/about/team/#team",
+            "text": "AT&T Foundry in Palo Alto, CA, USA",
+            "title": "Team"
+        },
+        {
+            "location": "/about/team/#marcel-neuhausler-lead",
+            "text": "Control - ToRC & DNS-Scheduler  Network - SnapRoute, FBOSS, Consul/DNS  Deployment - Scripts, Configuration",
+            "title": "Marcel Neuhausler (Lead)"
+        },
+        {
+            "location": "/about/team/#julius-mueller",
+            "text": "State - etcd, statesync  Network - Calico",
+            "title": "Julius Mueller"
+        },
+        {
+            "location": "/about/team/#henry-chang",
+            "text": "Metrics - Vector, Performance CoPilot, datacollector, InfluxDB",
+            "title": "Henry Chang"
+        },
+        {
+            "location": "/about/team/#karen-yang-intern",
+            "text": "DNS-Example - smartscaling, loadgenerator",
+            "title": "Karen Yang (Intern)"
+        },
+        {
+            "location": "/about/license/",
+            "text": "The MIT License (MIT)\n\n\nCopyright (c) 2016 AT&T\n\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.",
+            "title": "License"
+        },
+        {
+            "location": "/about/license/#the-mit-license-mit",
+            "text": "Copyright (c) 2016 AT&T  Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.",
+            "title": "The MIT License (MIT)"
+        }
+    ]
+}
