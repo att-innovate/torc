@@ -572,7 +572,7 @@
         },
         {
             "location": "/softwarehardware/",
-            "text": "Software / Hardware List\n\n\nA list of Open Source Software and Open Hardware used by ToRC.\n\n\nOpen Hardware\n\n\n\n\nEdge-Core Wedge-16X 40GbE Data Center Switch\n \n\n\n\n\nToRC Open Source Projects\n\n\n\n\ntorc-scripts\n\n\ntorc-scheduler\n\n\n\n\nExternal Open Source Software\n\n\n\n\nOnie - Open Network Install Environment\n\n\nONL - Open Network Linux\n\n\nSnapRoute\n\n\nApache Mesos\n\n\nDocker\n\n\nRust Prgramming Language\n\n\nGo Programming Language\n\n\nVector\n\n\nPerformance CoPilot\n\n\nConsul\n\n\netcd\n\n\netcd-browser\n\n\nInfluxDB\n\n\nCalico\n\n\n\n\nDocumentation\n\n\n\n\nMkDocs\n\n\nFlatly Theme",
+            "text": "Software / Hardware List\n\n\nA list of Open Source Software and Open Hardware used by ToRC.\n\n\nOpen Hardware\n\n\n\n\nEdge-Core Wedge-16X 40GbE Data Center Switch\n \n\n\n\n\nToRC Open Source Projects\n\n\n\n\ntorc-scripts\n\n\ntorc-scheduler\n\n\ntorc-dns-scheduler\n\n\n\n\nExternal Open Source Software\n\n\n\n\nOnie - Open Network Install Environment\n\n\nONL - Open Network Linux\n\n\nSnapRoute\n\n\nApache Mesos\n\n\nDocker\n\n\nRust Prgramming Language\n\n\nGo Programming Language\n\n\nVector\n\n\nPerformance CoPilot\n\n\nConsul\n\n\netcd\n\n\netcd-browser\n\n\nInfluxDB\n\n\nCalico\n\n\n\n\nDocumentation\n\n\n\n\nMkDocs\n\n\nFlatly Theme",
             "title": "Software / Hardware"
         },
         {
@@ -587,7 +587,7 @@
         },
         {
             "location": "/softwarehardware/#torc-open-source-projects",
-            "text": "torc-scripts  torc-scheduler",
+            "text": "torc-scripts  torc-scheduler  torc-dns-scheduler",
             "title": "ToRC Open Source Projects"
         },
         {
