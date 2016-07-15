@@ -572,7 +572,7 @@
         },
         {
             "location": "/softwarehardware/",
-            "text": "Software / Hardware List\n\n\nA list of Open Source Software and Open Hardware used by ToRC.\n\n\nToRC Open Source Projects\n\n\n\n\nDeployment Scripts\n\n\nToRC Scheduler\n\n\nDNS Scheduler\n\n\n\n\nOpen Compute Hardware\n\n\n\n\nEdge-Core Wedge-16X 40GbE Data Center Switch\n \n\n\n\n\nExternal Open Source Software\n\n\n\n\nOnie - Open Network Install Environment\n\n\nONL - Open Network Linux\n\n\nSnapRoute\n\n\nApache Mesos\n\n\nDocker\n\n\nRust Prgramming Language\n\n\nGo Programming Language\n\n\nVector\n\n\nPerformance CoPilot\n\n\nConsul\n\n\netcd\n\n\netcd-browser\n\n\nInfluxDB\n\n\nCalico\n\n\n\n\nDocumentation\n\n\n\n\nMkDocs\n\n\nFlatly Theme",
+            "text": "Software / Hardware List\n\n\nA list of Open Source Software and Open Hardware used by ToRC.\n\n\nToRC Open Source Projects\n\n\n\n\nDeployment Scripts\n\n\nToRC Scheduler\n\n\nDNS Scheduler\n\n\nStatesync\n\n\nVector\n, ToRC Fork\n\n\nDatacollector\n\n\nSnapRoute Client\n\n\nmesos-rs\n, ToRC Fork\n\n\nFBOSS Client\n\n\nFBOSS\n, ToRC CentOS version\n\n\n\n\nOpen Compute Hardware\n\n\n\n\nEdge-Core Wedge-16X 40GbE Data Center Switch\n \n\n\n\n\nExternal Open Source Projects\n\n\n\n\nOnie - Open Network Install Environment\n\n\nONL - Open Network Linux\n\n\nSnapRoute\n\n\nApache Mesos\n\n\nDocker\n\n\nRust Prgramming Language\n\n\nGo Programming Language\n\n\nVector\n\n\nPerformance CoPilot\n\n\nConsul\n\n\netcd\n\n\netcd-browser\n\n\nInfluxDB\n\n\nCalico\n\n\n\n\nDocumentation\n\n\n\n\nMkDocs\n\n\nFlatly Theme",
             "title": "Software / Hardware"
         },
         {
@@ -582,7 +582,7 @@
         },
         {
             "location": "/softwarehardware/#torc-open-source-projects",
-            "text": "Deployment Scripts  ToRC Scheduler  DNS Scheduler",
+            "text": "Deployment Scripts  ToRC Scheduler  DNS Scheduler  Statesync  Vector , ToRC Fork  Datacollector  SnapRoute Client  mesos-rs , ToRC Fork  FBOSS Client  FBOSS , ToRC CentOS version",
             "title": "ToRC Open Source Projects"
         },
         {
@@ -591,9 +591,9 @@
             "title": "Open Compute Hardware"
         },
         {
-            "location": "/softwarehardware/#external-open-source-software",
+            "location": "/softwarehardware/#external-open-source-projects",
             "text": "Onie - Open Network Install Environment  ONL - Open Network Linux  SnapRoute  Apache Mesos  Docker  Rust Prgramming Language  Go Programming Language  Vector  Performance CoPilot  Consul  etcd  etcd-browser  InfluxDB  Calico",
-            "title": "External Open Source Software"
+            "title": "External Open Source Projects"
         },
         {
             "location": "/softwarehardware/#documentation",
