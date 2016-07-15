@@ -212,14 +212,14 @@
 <h3 id="computing-at-the-edge">Computing at the Edge</h3>
 <p>The dynamic nature of ever increasing traffic over mobile networks requires highly reactive backends. Things like video-caching, anomaly detection, efficient bandwidth management, or even routing has to be handled much closer to the enduser, to the enduser device.</p>
 <p>Low latency requirements of many mobile related use-cases makes every roundtrip to the central data-center inefficient or even impossible, especially for any control flows.</p>
-<h3 id="micro-server-in-every-device">Micro-Server in every Device</h3>
+<h3 id="micro-server-in-every-device">Micro-server in every device</h3>
 <p>In 2015 Facebook announced that they have built their own network switch. We obviously got curious about the reasons behind that decision. Luckily some insides can be found in a related blog post: "<a href="https://code.facebook.com/posts/145488969140934/open-networking-advances-with-wedge-and-fboss/">Open networking advances with Wedge and FBOSS</a>”.</p>
 <blockquote>
 <p>Many network operators we've spoken with share our goal of <strong>managing our networking devices and servers in the same way</strong>. With that goal in mind, we designed both <strong>Wedge</strong> and <strong>FBOSS</strong> to closely resemble server hardware and server software, which has <strong>enabled us to deploy, monitor, and control these systems alongside our servers and storage</strong>.</p>
 </blockquote>
 <p>The disintegration in to individual dedicate hardware-components for switching and device management (BMC) allowed Facebook to use a regular off-the-shelf micro-server for the control-plane.</p>
 <p>This Intel-based micro-server with 8gb RAM and 120gb SSD became the enabling piece for our ToRC architecture.</p>
-<h3 id="build-ship-and-run-on-any-device">Build, ship, and run on any Device</h3>
+<h3 id="build-ship-and-run-on-any-device">Build, ship, and run on any device</h3>
 <p><a href="http://www.docker.com">Docker</a> changed the way we package, deploy, and run services. We are finally in a position where we can run the same package, the same container on a switch and a regular compute node independent of underlying Linux kernel and libraries. This simplifies and streamlines not just the deployment of services but also provides a unique opportunity to decide at run time where to place and run a service.</p>
 <h3 id="metrics-driven-orchestration">Metrics-driven Orchestration</h3>
 <h4 id="ease-of-metrics-collection">Ease of Metrics Collection</h4>
@@ -242,7 +242,7 @@
 <h3 id="federation-of-autonomous-racks">Federation of Autonomous Racks</h3>
 <p>Each rack serves as a self-contained “datacenter”. It has all the core control and network functions needed to work as an autonomous entity.</p>
 <p>Each rack controls the visibility of its services and state.</p>
-<p>Racks can be bundled in groups. Groups share state in an eventual consistence way.</p>
+<p>Racks can be bundled in groups. Groups share state in an eventual consistant way.</p>
 <h3 id="top-of-rack-controller">Top-of-Rack Controller</h3>
 <p>The unique location of the Top-of-Rack switch and its importance for the whole rack makes it a perfect fit for any core controller functionality.</p>
 <h3 id="no-virtualization-minimal-abstraction">No virtualization, minimal abstraction</h3>

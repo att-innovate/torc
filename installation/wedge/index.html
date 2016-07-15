@@ -268,8 +268,8 @@ root@wedge:~# apt-get install -y docker-engine
 <pre><code>root@wedge:~# docker info
 </code></pre>
 <h3 id="install-snaproute">Install SnapRoute</h3>
-<pre><code>root@wedge:~# wget -P /tmp https://github.com/OpenSnaproute/binaries/raw/master/wedge40/kernel_3.18.25/flexswitch_accton_wedge40-1.0.0.114_amd64.deb
-root@wedge:~# dpkg -i /tmp/flexswitch_accton_wedge40-1.0.0.114_amd64.deb
+<pre><code>root@wedge:~# wget -P /tmp https://github.com/OpenSnaproute/bin-BCMPlatforms/blob/master/accton_wedge40/kernel_3.18.25/flexswitch_accton_wedge40-1.0.0.118_amd64.deb
+root@wedge:~# dpkg -i /tmp/flexswitch_accton_wedge40-1.0.0.118_amd64.deb
 </code></pre>
 <p>There will be errors about missing dependencies, following command will fix this.</p>
 <pre><code>root@wedge:~# apt-get -f install
