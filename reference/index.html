@@ -201,13 +201,473 @@
     
         <li class="main active"><a href="#reference">Reference</a></li>
         
+            <li><a href="#torc-scheduler">ToRC-Scheduler</a></li>
+        
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h2 id="reference">Reference</h2>
-<p>.. still working on getting this finalized ..</p></div>
+<h1 id="reference">Reference</h1>
+<h2 id="torc-scheduler">ToRC-Scheduler</h2>
+<p>The ToRC-Scheduler is responsible for all the core services / containers. The scheduler is a Mesos-Framework and interacts closely with the Mesos master.</p>
+<p>Please refer to the different reference sections:</p>
+<ul>
+<li><a href="./#command-line-arguments">Command-Line Arguments</a></li>
+<li><a href="./#configuration">Configuration</a></li>
+<li><a href="./#rest-api">REST API</a></li>
+</ul>
+<h3 id="command-line-arguments">Command-Line Arguments</h3>
+<p>To get a list of all the possible arguments type</p>
+<pre><code>./torc-scheduler --help
+</code></pre>
+<p>Additional</p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Explanation</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--master</td>
+<td>IP Address of Mesos Master</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>--config</td>
+<td>Configuration File to be used</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>--myip</td>
+<td>IP Address of Scheduler in case IP is different from Mesos Master IP</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>Cmdline used in our <a href="../installation/installation/">demo setup</a></p>
+<pre><code>./torc-scheduler --master 10.250.3.20 --config /config.yml
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<p>The ToRC Scheduler is highly configurable through its configuration file. The configuration is formatted as a <code>yaml</code> file.</p>
+<p>The configuration files used in our <a href="../installation/installation/">demo setup</a> can be found in the <a href="https://github.com/att-innovate/torc-scripts/tree/master/docker/torc-scheduler/provision">torc-scripts projects</a>.</p>
+<p>The file contains following sub-structures</p>
+<h4 id="name"><strong>name:</strong></h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>The name of this scheduler / Mesos Framework</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>name: torc-scheduler
+</code></pre>
+<h4 id="nodes"><strong>nodes:</strong></h4>
+<p>Configuration of all the nodes managed by this scheduler.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>The name of the node</td>
+</tr>
+<tr>
+<td>ip</td>
+<td>Main IP address of the node. The variable $MASTER_IP can be used as placeholder for the control/master node.</td>
+</tr>
+<tr>
+<td>external_ip</td>
+<td>External IP address of the node. This address gets used as endpoint for external routes</td>
+</tr>
+<tr>
+<td>type</td>
+<td>Node type can be either master or slave</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>nodes:
+    - name: wedge
+      ip: $MASTER_IP
+      external_ip: $MASTER_IP
+      type: master
+    - name: bladerunner1
+      ip: 10.250.3.21
+      external_ip: 10.250.3.21
+      type: slave
+</code></pre>
+<h4 id="dns-addons"><strong>dns-addons:</strong></h4>
+<p>Additional DNS entries can be added to the <code>service.torc</code> domain.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>The name of the DNS entry</td>
+</tr>
+<tr>
+<td>ip</td>
+<td>The IP for this DNS entry. The variable $MASTER_IP can be used as placeholder for entries that are running on the control/master node</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>dns-addons:
+    - name: etcd
+      ip: $MASTER_IP
+    - name: network-agent
+      ip: $MASTER_IP
+</code></pre>
+<h4 id="network-agent"><strong>network-agent:</strong></h4>
+<p>Which network-agent is used to communication with the switching silicon (Broadcom Trident II).</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type</td>
+<td>Either snaproute or fboss</td>
+</tr>
+<tr>
+<td>connection</td>
+<td>The connection argument for the API of the network-agent in form ip:port. By default controller / master run on the same node as the network-agent and therefor $MASTER_IP can be used</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>network-agent:
+    type: snaproute
+    connection: $MASTER_IP:8080
+</code></pre>
+<h4 id="statesync"><strong>statesync:</strong></h4>
+<p>Interval in which the scheduler checks on the state of the managed services, updates their “last_update” timestamp, and if necessary adds DNS entries in consul and routes in the network-agent.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>poll_interval_in_seconds</td>
+<td>Interval in secondes</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>statesync:
+    poll_interval_in_seconds: 10
+</code></pre>
+<h4 id="stateclean"><strong>stateclean:</strong></h4>
+<p>The garbage-collector in the scheduler constantly checks the internal state for service entries whose “last_update” timestamp is older than the timeout setting, and for those services it will delete their DNS entries and routes.</p>
+<p>If the services are of type “system services”, see below, it will initiate a restart after a configured delay. </p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>poll_interval_in_seconds</td>
+<td>Interval in secondes for the cleanup thread</td>
+</tr>
+<tr>
+<td>timeout_in_seconds</td>
+<td>timeout interval after which a services gets marked as down</td>
+</tr>
+<tr>
+<td>restart_delay_in_seconds</td>
+<td>delay between the time a service got marked as “timed-out” and a restart gets initated</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>stateclean:
+    poll_interval_in_seconds: 18
+    timeout_in_seconds: 30
+    restart_delay_in_seconds: 30
+</code></pre>
+<h4 id="services"><strong>services:</strong></h4>
+<p>The services managed by the scheduler are currently all deployed using Docker containers.</p>
+<p>There are two types of services managed by the scheduler. <strong>System Services</strong> and <strong>On-Demand Services</strong>.</p>
+<p>System Services are the core ToRC services. The scheduler will guarantee that they will always be up and running. If one fails the scheduler will try to restart it. System Services are defined in the <code>healthcheck:system_services:</code> section of the config file.</p>
+<p>On-Demand Services are services that can be started on-demand via the scheduler API. On-Demand Service can be arranged in groups and started as a group. On-Demand Services are defined in the <code>api:service-groups:</code> section.</p>
+<p>Placement of a service can be constraint based on node specific attributes like node_name, node_type, or node_function. Those node specific attributes can be found on each node in <code>/etc/mesos-slave/attributes</code>.</p>
+<p>Placement of a service can be constraint based on resource requirements like size of memory or cpu allocation.</p>
+<p>Service Definition:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>Name of the service. Displayed in Mesos as task-name</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>image_name</td>
+<td>Name of the Docker image</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>node_name</td>
+<td>Container will only be placed on node with the specified name</td>
+<td>No</td>
+</tr>
+<tr>
+<td>node_type</td>
+<td>Container will only be placed on nodes with matching type</td>
+<td>No</td>
+</tr>
+<tr>
+<td>node_function</td>
+<td>Container will only be placed on nodes with matching function</td>
+<td>No</td>
+</tr>
+<tr>
+<td>memory</td>
+<td>Container will only be placed on a node with that amount of free memory</td>
+<td>No</td>
+</tr>
+<tr>
+<td>cpu</td>
+<td>Container will only be placed on a node that can satisfy the specified cpu allocation</td>
+<td>No</td>
+</tr>
+<tr>
+<td>arguments</td>
+<td>Arguments passed to the container</td>
+<td>No</td>
+</tr>
+<tr>
+<td>parameters</td>
+<td>Additional parameters passed to Docker as part of the run command</td>
+<td>No</td>
+</tr>
+<tr>
+<td>privileged</td>
+<td>If the container requires to be run in privileged mode</td>
+<td>No</td>
+</tr>
+<tr>
+<td>sla</td>
+<td>Two options are currenty supported. “singleton_each_node” tells the scheduler to start exactly one of this services on each node. “SingletonEachSlave” starts exactly one of this service on each slave.</td>
+<td>No</td>
+</tr>
+<tr>
+<td>is_metered</td>
+<td>Metrics of this container will get collected and stored in the time series database</td>
+<td>No</td>
+</tr>
+<tr>
+<td>network_type</td>
+<td>Type of network adapter to use. “host” specifies that this container will run on the host adapter, typical for system services. “torc” stands for “torc managed” L3 routable network adapter, typical for use-case specific containers.</td>
+<td></td>
+</tr>
+<tr>
+<td>volumes</td>
+<td>Lets you define host directories which get mounted inside of a container. See below for required fields for volumes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<p>DNS Container has to run on controller node with host adapter and expects the bind argument to be set.</p>
+<pre><code>- name: dns
+  image_name: dns
+  arguments: -bind=$MASTER_IP
+  node_function: controller
+  network_type: host
+</code></pre>
+<p>InfluxDB runs on bladerunner3, needs 1GB of memory, and listens on the host adapter.</p>
+<pre><code>- name: influxdb
+  image_name: influxdb
+  memory: 1024.0
+  node_name: bladerunner3
+  network_type: host
+</code></pre>
+<h4 id="volumes"><strong>volumes:</strong></h4>
+<p>Volumes define the mount points for Docker containers as part of the service definition.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>host_path</td>
+<td>Path on the host the container needs access to</td>
+</tr>
+<tr>
+<td>container_path</td>
+<td>Mount point inside of the container</td>
+</tr>
+<tr>
+<td>read_only_mode</td>
+<td>If “yes”, container has only read access to the host folder, if set to “no”, container can read and write to the host folder</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<p>Performance CoPilot is our metrics collection agent and needs access to the host folders to be able to collect the different host and container metrics.</p>
+<pre><code>- name: pcp
+  image_name: attinnovate/charmander-pcp
+  privileged: true
+  sla: singleton_each_node
+  volumes:
+  - host_path: /sys
+    container_path: /sys
+    read_only_mode: true
+  - host_path: /etc/localtime
+    container_path: /etc/localtime
+    read_only_mode: true
+  - host_path: /var/lib/docker
+    container_path: /var/lib/docker
+    read_only_mode: true
+  - host_path: /run
+    container_path: /run
+    read_only_mode: false
+  - host_path: /var/log
+    container_path: /var/log
+    read_only_mode: false
+  - host_path: /dev/log
+    container_path: /dev/log
+    read_only_mode: false
+    parameters: --ipc=host
+    network_type: host
+</code></pre>
+<h4 id="healthcheck"><strong>healthcheck:</strong></h4>
+<p>Configuration for the healthcheck thread responsible of supervising and running of the system services. </p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>poll_interval_in_seconds</td>
+<td>Time in seconds the health check runs and verifies that all the system_services are up and running</td>
+</tr>
+<tr>
+<td>system_services</td>
+<td>List of system service, see above</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>healthcheck:
+  poll_interval_in_seconds: 12 
+  system_services:
+  - name: dns
+    image_name: dns
+    arguments: -bind=$MASTER_IP
+    node_function: controller
+    network_type: host
+  - name: vector
+    image_name: vector
+    arguments: -p 9091
+    node_function: controller
+    network_type: host
+</code></pre>
+<h4 id="apiservice-groups"><strong>api:service-groups:</strong></h4>
+<p>Lists of the groups of on-demand services. Those services can be started using the REST API, see below.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>Name of the service group. Referred to by the service_group start request, see below</td>
+</tr>
+<tr>
+<td>services</td>
+<td>One or more service definitions that belong to this group</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>api:
+  service-groups:
+  - name: torc-dns-scheduler
+    services:
+    - name: torc-dns-scheduler
+      image_name: torc-dns-scheduler
+      node_name: bladerunner3
+      memory: 1024.0
+      arguments: --master $MASTER_IP --config config.yml
+      network_type: host
+</code></pre>
+<h3 id="rest-api">REST API</h3>
+<p>The ToRC Scheduler offers REST APIs on port 3000. The APIs can be used to request service and node information, to start On-Demand services/service_groups, and to kill On-Demand services.</p>
+<h4 id="pingpong"><strong>Ping/Pong</strong></h4>
+<p>Simple connection check. Response should be ‘pong’.</p>
+<pre><code>$ curl http://wedge:3000/admin/ping
+</code></pre>
+<h4 id="list-nodes"><strong>List Nodes</strong></h4>
+<p>List details of all known nodes.</p>
+<pre><code>$ curl http://wedge:3000/nodes
+</code></pre>
+<h4 id="list-services"><strong>List Services</strong></h4>
+<p>List all services, system services and use-case specific once managed by sub-schedulers.</p>
+<pre><code>$ curl http://wedge:3000/services
+</code></pre>
+<h4 id="list-running-services"><strong>List Running Services</strong></h4>
+<p>List all running services and use-case specific services.</p>
+<pre><code>$ curl http://wedge:3000/services/running
+</code></pre>
+<h4 id="list-metered-services"><strong>List Metered Services</strong></h4>
+<p>List all services and use-case specific services whose metrics get collected and stored in the time series database.</p>
+<pre><code>$ curl http://wedge:3000/services/metered
+</code></pre>
+<h4 id="start-service-group"><strong>Start Service Group</strong></h4>
+<p>Starts service(s) configured as part of that names service group.</p>
+<pre><code>$ curl http://wedge:3000/start/group?name=torc-dns-scheduler
+</code></pre>
+<h4 id="kill-service"><strong>Kill Service</strong></h4>
+<p>Kills specified On-Demand service.</p>
+<pre><code>$ curl -X "DELETE" http://wedge:3000/service?name=torc-dns-scheduler
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
